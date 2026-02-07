@@ -1,0 +1,14 @@
+[
+  {
+    "id": "policy_1770472649988",
+    "type": "policy",
+    "title": "new policy",
+    "description": "test",
+    "submittedDate": "2/7/2026",
+    "submittedBy": "user",
+    "details": [],
+    "status": "failed",
+    "decision": "failed",
+    "failureReason": "failed policy test"
+  }
+]
