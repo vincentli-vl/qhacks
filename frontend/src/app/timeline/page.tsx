@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import axios from "axios";
 
 interface TimelineEvent {
   id: number | string;
@@ -12,183 +14,64 @@ interface TimelineEvent {
   details: string[];
   reason?: string;
   isPendingRequest?: boolean;
+  category?: string;
 }
-
-const timelineData: TimelineEvent[] = [
-  {
-    id: 1,
-    date: "January 15, 2024",
-    title: "Affordable Housing Initiative Proposal",
-    description: "City council proposes new affordable housing development program",
-    type: "proposal",
-    status: "in-progress",
-    details: [
-      "Budget allocation: $50 million over 5 years",
-      "Target zones identified in downtown and suburbs",
-      "Partnership with local developers planned",
-    ],
-  },
-  {
-    id: 2,
-    date: "February 2, 2024",
-    title: "First Community Debate on Housing",
-    description: "Public hearing on the affordable housing proposal",
-    type: "debate",
-    status: "completed",
-    details: [
-      "200+ residents attended the meeting",
-      "Support: 65% in favor, concerns about traffic and density",
-      "Opposition: 35% cited environmental and parking concerns",
-      "Questions raised about long-term maintenance costs",
-    ],
-  },
-  {
-    id: 3,
-    date: "February 20, 2024",
-    title: "City Council Committee Review",
-    description: "Finance and planning committees review the proposal",
-    type: "debate",
-    status: "completed",
-    details: [
-      "Finance committee approved budget allocation",
-      "Planning committee requested environmental impact study",
-      "Proposed amendments to address parking concerns",
-      "Recommended 6-month feasibility study before full approval",
-    ],
-  },
-  {
-    id: 4,
-    date: "March 10, 2024",
-    title: "Environmental Impact Study Commissioned",
-    description: "Independent study ordered to assess environmental effects",
-    type: "proposal",
-    status: "in-progress",
-    details: [
-      "Study timeline: 4 months",
-      "Focus areas: traffic impact, water systems, green space",
-      "Budget: $250,000",
-      "Expected completion: July 2024",
-    ],
-  },
-  {
-    id: 5,
-    date: "April 5, 2024",
-    title: "Council Member Opposition Emerges",
-    description: "Three council members raise concerns about cost-sharing",
-    type: "debate",
-    status: "completed",
-    details: [
-      "Concern: Private developers receiving too many incentives",
-      "Question: Is public funding properly leveraged?",
-      "Proposal to revise public-private partnership terms",
-      "Call for additional transparency requirements",
-    ],
-  },
-  {
-    id: 6,
-    date: "May 1, 2024",
-    title: "Budget Amendment Proposed",
-    description: "New financing structure proposed to address cost concerns",
-    type: "proposal",
-    status: "completed",
-    details: [
-      "Increase in developer contribution from 30% to 40%",
-      "Creation of oversight committee for project monitoring",
-      "Annual reporting requirements to city council",
-      "Performance metrics for affordability standards",
-    ],
-  },
-  {
-    id: 7,
-    date: "June 15, 2024",
-    title: "Second Public Hearing",
-    description: "Community feedback on revised proposal",
-    type: "debate",
-    status: "completed",
-    details: [
-      "Increased developer contribution well-received",
-      "New concerns raised about gentrification timeline",
-      "Request for rent stabilization provisions",
-      "Demand for local hiring requirements in construction",
-    ],
-  },
-  {
-    id: 8,
-    date: "July 20, 2024",
-    title: "Environmental Study Delayed",
-    description: "Impact assessment report delayed by 2 months",
-    type: "rejection",
-    status: "failed",
-    details: [
-      "Reason: Additional groundwater testing required",
-      "Discovery of potential soil contamination in one zone",
-      "New timeline: September 2024",
-      "Additional study cost: $75,000",
-    ],
-    reason: "Environmental concerns requiring further investigation",
-  },
-  {
-    id: 9,
-    date: "August 10, 2024",
-    title: "Council Discussion on Timeline",
-    description: "Debate about project viability with extended timeline",
-    type: "debate",
-    status: "completed",
-    details: [
-      "Concern: Project delays affecting developer interest",
-      "Some members propose proceeding without full study",
-      "Others advocate for strict environmental standards",
-      "Compromise: Move forward with contingency plans",
-    ],
-  },
-  {
-    id: 10,
-    date: "September 25, 2024",
-    title: "Final Environmental Report Released",
-    description: "Environmental impact study completed with recommendations",
-    type: "decision",
-    status: "completed",
-    details: [
-      "Report: Feasible with mitigation measures",
-      "Required: Soil remediation in one zone",
-      "Cost estimate for remediation: $2 million",
-      "Timeline impact: Additional 3-4 months needed",
-    ],
-  },
-  {
-    id: 11,
-    date: "October 15, 2024",
-    title: "Final Vote Scheduled",
-    description: "City council to vote on affordable housing initiative",
-    type: "decision",
-    status: "in-progress",
-    details: [
-      "Vote date: November 5, 2024",
-      "Council members: 7 likely yes, 2 undecided",
-      "Public comment period: 2 weeks",
-      "Expected decision impact on Q1 2025 construction start",
-    ],
-  },
-];
 
 export default function Timeline() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "in-progress" | "completed" | "failed">("all");
-  const [allEvents, setAllEvents] = useState<TimelineEvent[]>(timelineData);
+  const [allEvents, setAllEvents] = useState<TimelineEvent[]>([]);
+  const [displayedEvents, setDisplayedEvents] = useState<TimelineEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const observerTarget = useRef<HTMLDivElement>(null);
+  const ITEMS_PER_PAGE = 10;
 
-  // Fetch pending requests and add them to timeline
+  // Fetch all data and convert to timeline events
   useEffect(() => {
-    const fetchPendingRequests = async () => {
+    const fetchAllData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/pending-requests");
-        if (response.ok) {
-          const requests = await response.json();
-          
-          // Convert pending requests to timeline events
-          const requestEvents: TimelineEvent[] = requests
-            .filter((req: any) => req.status === "passed" || req.status === "failed")
-            .map((req: any) => ({
-              id: req.id,
+        // Fetch all data from the API
+        const [dataResponse, pendingResponse, meetingsResponse] = await Promise.all([
+          axios.get("http://localhost:5000/api/data"),
+          axios.get("http://localhost:5000/api/pending-requests"),
+          axios.get("http://localhost:5000/api/events"),
+        ]);
+
+        const allData = dataResponse.data;
+        const pendingRequests = pendingResponse.data;
+        const meetings = meetingsResponse.data;
+
+        const events: TimelineEvent[] = [];
+
+        // Convert meetings to timeline events
+        meetings.forEach((meeting: any, idx: number) => {
+          const meetingDate = new Date(meeting.date.split(" - ")[0]);
+          // Create unique ID using meeting URL or combination of date and title with index
+          const uniqueId = meeting.meeting_url || `meeting_${meetingDate.getTime()}_${idx}`;
+          events.push({
+            id: uniqueId,
+            date: meetingDate.toLocaleDateString("en-US", { 
+              year: "numeric", 
+              month: "long", 
+              day: "numeric" 
+            }),
+            title: meeting.meeting,
+            description: `City Council Meeting - ${meeting.meeting}`,
+            type: "debate" as const,
+            status: "completed" as const,
+            details: Object.entries(meeting.documents).map(([key, value]) => `${key}: Available`),
+            category: "Council Meeting",
+          });
+        });
+
+        // Convert pending requests to timeline events
+        pendingRequests
+          .filter((req: any) => req.status === "passed" || req.status === "failed")
+          .forEach((req: any, idx: number) => {
+            events.push({
+              id: `pending_${req.id || idx}_${Date.now()}_${idx}`,
               date: req.submittedDate || new Date().toLocaleDateString(),
               title: `${req.status === "passed" ? "✓ Approved" : "✗ Rejected"}: ${req.title}`,
               description: req.description,
@@ -197,30 +80,132 @@ export default function Timeline() {
               details: req.details || [],
               reason: req.failureReason,
               isPendingRequest: true,
-            }));
-          
-          setAllEvents([...timelineData, ...requestEvents]);
-        }
+              category: req.type,
+            });
+          });
+
+        // Convert data from various categories to timeline events
+        Object.entries(allData).forEach(([category, items]: [string, any]) => {
+          if (Array.isArray(items)) {
+            items.forEach((item: any, idx: number) => {
+              // Extract a timestamp or date if available
+              const dateStr = item.timestamp || item.date || item.submittedDate || new Date().toISOString();
+              const itemDate = new Date(dateStr);
+              
+              // Create a title from the item
+              const title = item.heading || item.title || item.meeting || `${category.replace(/_/g, " ")} Entry`;
+              
+              // Create description from text or other fields
+              const description = item.text || item.description || JSON.stringify(item).substring(0, 200);
+
+              events.push({
+                id: `data_${category}_${idx}_${itemDate.getTime()}`,
+                date: itemDate.toLocaleDateString("en-US", { 
+                  year: "numeric", 
+                  month: "long", 
+                  day: "numeric" 
+                }),
+                title: title,
+                description: description,
+                type: "proposal" as const,
+                status: "completed" as const,
+                details: [
+                  `Category: ${category.replace(/_/g, " ")}`,
+                  ...(item.pdfs && item.pdfs.length > 0 ? [`Documents: ${item.pdfs.length} available`] : []),
+                ],
+                category: category,
+              });
+            });
+          }
+        });
+
+        // Sort events by date (most recent first)
+        events.sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return dateB.getTime() - dateA.getTime();
+        });
+
+        setAllEvents(events);
       } catch (error) {
-        console.error("Error fetching pending requests:", error);
-        setAllEvents(timelineData);
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchPendingRequests();
+    fetchAllData();
   }, []);
 
-  const filteredTimeline = allEvents.filter((event) => {
-    const matchesSearch =
-      searchQuery === "" ||
-      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.details.some((detail) => detail.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredTimeline = useMemo(() => {
+    return allEvents.filter((event) => {
+      const matchesSearch =
+        searchQuery === "" ||
+        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.details.some((detail) => detail.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    const matchesStatus = statusFilter === "all" || event.status === statusFilter;
+      const matchesStatus = statusFilter === "all" || event.status === statusFilter;
 
-    return matchesSearch && matchesStatus;
-  });
+      return matchesSearch && matchesStatus;
+    });
+  }, [allEvents, searchQuery, statusFilter]);
+
+  // Lazy loading logic
+  const loadMoreEvents = useCallback(() => {
+    const nextPage = page + 1;
+    const start = nextPage * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    const newEvents = filteredTimeline.slice(start, end);
+    
+    if (newEvents.length > 0) {
+      setDisplayedEvents((prev) => [...prev, ...newEvents]);
+      setPage(nextPage);
+    }
+  }, [page, filteredTimeline, ITEMS_PER_PAGE]);
+
+  // Reset displayed events when filters change
+  useEffect(() => {
+    setPage(0);
+    setDisplayedEvents(filteredTimeline.slice(0, ITEMS_PER_PAGE));
+  }, [filteredTimeline, ITEMS_PER_PAGE]);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading) {
+          loadMoreEvents();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [loadMoreEvents, loading]);
+
+  // Show/hide back to top button based on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -318,7 +303,11 @@ export default function Timeline() {
         </div>
 
         {/* Timeline */}
-        {filteredTimeline.length === 0 ? (
+        {loading ? (
+          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+            <p className="text-gray-500 text-base sm:text-lg">Loading timeline...</p>
+          </div>
+        ) : filteredTimeline.length === 0 ? (
           <div className="bg-white rounded-lg shadow-lg p-8 text-center">
             <p className="text-gray-500 text-base sm:text-lg">
               No timeline events found matching your search.
@@ -331,7 +320,7 @@ export default function Timeline() {
 
             {/* Timeline events */}
             <div className="space-y-6">
-              {filteredTimeline.map((event) => (
+              {displayedEvents.map((event) => (
                 <div key={event.id} className="relative sm:pl-24 pl-6">
                   {/* Timeline dot - repositioned for mobile */}
                   <div className="absolute left-0 w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full border-4 border-indigo-600 flex items-center justify-center text-lg sm:text-2xl shadow-md">
@@ -383,6 +372,13 @@ export default function Timeline() {
                   </div>
                 </div>
               ))}
+              
+              {/* Infinite scroll trigger */}
+              <div ref={observerTarget} className="h-10 flex items-center justify-center">
+                {displayedEvents.length < filteredTimeline.length && (
+                  <p className="text-gray-500 text-sm">Loading more...</p>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -409,6 +405,29 @@ export default function Timeline() {
           </div>
         </div>
       </div>
+
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 z-50 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 transition-all duration-300 hover:scale-110"
+          aria-label="Back to top"
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 10l7-7m0 0l7 7m-7-7v18"
+            />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
