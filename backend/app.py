@@ -1,9 +1,14 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_cors import CORS
 import json
+from app.routes import main_bp, chat_bp
 
 app = Flask(__name__)
 CORS(app)
+
+# Register blueprints
+app.register_blueprint(main_bp, url_prefix='/api')
+app.register_blueprint(chat_bp, url_prefix='/api')
 
 # Load events from your scraper output
 with open('events_detailed.json', 'r') as f:
@@ -11,19 +16,8 @@ with open('events_detailed.json', 'r') as f:
 
 @app.route('/api/events', methods=['GET'])
 def get_events():
+    """Return all events from the JSON file"""
     return jsonify(events_data)
-
-@app.route('/api/chat', methods=['POST'])
-def chat():
-    data = request.json
-    message = data.get('message', '')
-    
-    # TODO: Connect to your Backboard AI assistant here
-    response = {
-        'response': f'You asked: {message}'
-    }
-    
-    return jsonify(response)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

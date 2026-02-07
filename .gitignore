@@ -5,11 +5,14 @@ frontend/.env.local
 frontend/.env
 
 # Backend
-backend/__pycache__/
 backend/venv/
 backend/.env
-backend/*.pyc
-backend/.DS_Store
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.py[cod]
+*$py.class
 
 # IDE
 .vscode/
