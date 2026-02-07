@@ -2,7 +2,6 @@
 import asyncio
 import os
 import json
-from datetime import datetime
 from pathlib import Path
 from backboard import BackboardClient
 from dotenv import load_dotenv
@@ -25,7 +24,7 @@ class EventsChatbot:
         if events_json_path is None:
             # Get the project root (3 levels up from this file)
             project_root = Path(__file__).parent.parent.parent
-            events_json_path = project_root / "events_detailed.json"
+            events_json_path = project_root / "backend" / "data" / "meeting_data.json"
         
         with open(events_json_path, 'r', encoding='utf-8') as f:
             self.events_data = json.load(f)
@@ -68,10 +67,15 @@ class EventsChatbot:
         matching_events = []
         
         for event in self.events_data:
-            # Search in title, date, and tags
-            title = event.get('title', '').lower()
+            # Search in meeting title, date, and documents
+            title = event.get('meeting', '').lower()
             date = event.get('date', '').lower()
-            agenda_html = event.get('agenda_html', '').lower() if event.get('agenda_html') else ''
+            meeting_url = event.get('meeting_url', '').lower()
+            documents = event.get('documents', {}) or {}
+            documents_text = " ".join([
+                str(doc_name).lower() + " " + str(doc_url).lower()
+                for doc_name, doc_url in documents.items()
+            ])
             
             # Check if any keyword matches
             match_score = 0
@@ -80,7 +84,9 @@ class EventsChatbot:
                     match_score += 3  # Title matches are most important
                 if keyword in date:
                     match_score += 2  # Date matches are also important
-                if keyword in agenda_html:
+                if keyword in meeting_url:
+                    match_score += 2
+                if keyword in documents_text:
                     match_score += 1  # HTML content matches are less important
             
             if match_score > 0:
@@ -108,17 +114,23 @@ class EventsChatbot:
         if not events:
             return None
         
-        response = f"I found {len(events)} event(s) in the local database:\n\n"
+        response = f"I found {len(events)} meeting(s) in the local database:\n\n"
         
         for i, event in enumerate(events, 1):
-            title = event.get('title', 'Untitled Event')
+            title = event.get('meeting', 'Untitled Meeting')
             date = event.get('date', 'Date TBA')
-            link = event.get('link', '')
+            link = event.get('meeting_url', '')
+            documents = event.get('documents', {}) or {}
             
             response += f"{i}. **{title}**\n"
             response += f"   Date: {date}\n"
             if link:
-                response += f"   Link: https://events.cityofkingston.ca{link}\n"
+                response += f"   Link: {link}\n"
+            if documents:
+                doc_items = list(documents.items())[:3]
+                response += "   Documents:\n"
+                for doc_name, doc_url in doc_items:
+                    response += f"     - {doc_name}: {doc_url}\n"
             response += "\n"
         
         return response
@@ -175,7 +187,7 @@ class EventsChatbot:
             }
         else:
             # No local results, use AI
-            context = "I searched the local events database but couldn't find specific matching events. Please provide a helpful response based on general knowledge about Kingston events and city council meetings."
+            context = "I searched the local meetings database but couldn't find specific matching meetings. Please provide a helpful response based on general knowledge about Kingston events and city council meetings."
             ai_response = await self.ask_ai(user_query, context)
             
             return {

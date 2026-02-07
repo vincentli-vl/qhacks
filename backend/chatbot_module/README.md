@@ -1,10 +1,10 @@
 # Events Chatbot
 
-This chatbot searches local Kingston events data first, then falls back to AI when needed.
+This chatbot searches local Kingston meetings data first, then falls back to AI when needed.
 
 ## How It Works
 
-1. **Local Search First**: When a user asks a question, the chatbot searches the `events_detailed.json` file for matching events based on keywords in the title, date, and content.
+1. **Local Search First**: When a user asks a question, the chatbot searches the `backend/data/meeting_data.json` file for matching meetings based on keywords in the meeting name, date, and document links.
 
 2. **AI Fallback**: If no relevant events are found locally, the chatbot uses the Backboard AI to provide a helpful response.
 
@@ -25,10 +25,10 @@ This chatbot searches local Kingston events data first, then falls back to AI wh
 
 ## Example Queries
 
-**Local Search Examples** (will return events from JSON):
+**Local Search Examples** (will return meetings from JSON):
 - "planning committee"
 - "heritage properties"
-- "February 2026 meetings"
+- "November 2024 meetings"
 - "council meeting"
 
 **AI Fallback Examples** (will use AI):

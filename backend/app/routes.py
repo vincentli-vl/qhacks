@@ -3,11 +3,11 @@ import asyncio
 import sys
 from pathlib import Path
 
-# Add the backboard directory to the Python path
+# Add the chatbot_module directory to the Python path
 backend_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(backend_dir))
 
-from backboard.chatbot import EventsChatbot
+from chatbot_module.chatbot import EventsChatbot
 
 main_bp = Blueprint('main', __name__)
 chat_bp = Blueprint('chat', __name__, url_prefix='/chat')

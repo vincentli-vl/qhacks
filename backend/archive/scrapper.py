@@ -1,105 +1,98 @@
 import requests
 from bs4 import BeautifulSoup
-import time
 import json
-from datetime import datetime
+import urllib3
+import html
+import os
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+session = requests.Session()
+session.verify = False
+
+url = "https://events.cityofkingston.ca/council/Index"
+r = session.get(url)
+soup = BeautifulSoup(r.text, "lxml")
+
+token = soup.find("input", {"name": "__RequestVerificationToken"})["value"]
+print(f"Token found: {token[:20]}...")
+
+payload = {
+    "__RequestVerificationToken": token,
+    "StartDate": "11/01/2024",
+    "EndDate": "11/01/2026"
 }
 
+meeting_data = []
 base_url = "https://events.cityofkingston.ca"
-all_events = []
-
-# Define the date range you want to scrape
-start_date = "02/10/2026"  # February 10, 2026
-end_date = "02/28/2026"    # February 28, 2026
-
-# Scrape first page only
 page = 0
-current_url = base_url + f"/council/Index?action=search&StartDate={start_date}&EndDate={end_date}"
+seen_meetings = set()
 
-print(f"Scraping page 1: {current_url}")
+while True:
+    print(f"\nFetching page {page}...")
+    
+    payload["page"] = page
+    r = session.post("https://events.cityofkingston.ca/council/Index?action=search", data=payload, verify=False)
+    results = BeautifulSoup(r.text, "lxml")
+    
+    table_rows = results.select("table tbody tr")
+    print(f"Found {len(table_rows)} rows on page {page}")
+    
+    if len(table_rows) == 0:
+        print("No more rows, stopping pagination")
+        break
+    
+    page_had_new = False
+    
+    for row in table_rows:
+        tds = row.find_all("td")
+        if len(tds) >= 3:
+            date_str = tds[0].get_text(strip=True)
+            
+            meeting_link = tds[1].find("a")
+            meeting_name = meeting_link.get_text(strip=True) if meeting_link else "N/A"
+            
+            # Use date + name as unique identifier
+            meeting_id = f"{date_str}|{meeting_name}"
+            
+            if meeting_id not in seen_meetings:
+                seen_meetings.add(meeting_id)
+                page_had_new = True
+                
+                meeting_url = meeting_link.get("href", "") if meeting_link else ""
+                if meeting_url.startswith("/"):
+                    meeting_url = base_url + meeting_url
+                
+                documents = {}
+                for td in tds[2:]:
+                    doc_links = td.find_all("a")
+                    for doc_link in doc_links:
+                        doc_text = doc_link.get_text(strip=True)
+                        doc_href = doc_link.get("href", "")
+                        if doc_text and doc_href:
+                            if doc_href.startswith("/"):
+                                doc_href = base_url + doc_href
+                            documents[doc_text] = html.unescape(doc_href)
+                
+                meeting_data.append({
+                    "date": date_str,
+                    "meeting": meeting_name,
+                    "meeting_url": meeting_url,
+                    "documents": documents
+                })
+    
+    if not page_had_new:
+        print("No new meetings found, stopping pagination")
+        break
+    
+    page += 1
 
-try:
-    response = requests.get(current_url, headers=headers, timeout=10)
-    response.raise_for_status()
-except requests.exceptions.ConnectionError:
-    print("Connection error: The server closed the connection. Try again later.")
-    exit()
-except requests.exceptions.Timeout:
-    print("Timeout error: The request took too long.")
-    exit()
+# Save to JSON
+output_dir = os.path.join(os.path.dirname(__file__), "..", "data")
+os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, "meeting_data.json")
 
-soup = BeautifulSoup(response.text, "html.parser")
+with open(output_path, "w") as f:
+    json.dump(meeting_data, f, indent=2)
 
-# Find all table rows
-for row in soup.select("table tbody tr"):
-    tds = row.find_all("td")
-    if len(tds) >= 2:
-        date = tds[0].text.strip()
-        link_elem = tds[1].find("a")
-        if link_elem:
-            title = link_elem.text.strip()
-            link = link_elem.get("href", "")
-            all_events.append({
-                "date": date,
-                "title": title,
-                "link": link
-            })
-
-print(f"Found {len(all_events)} events on first page")
-
-# Debug: fetch first event detail page to inspect structure
-if all_events:
-    debug_url = base_url + all_events[0]["link"]
-    print(f"\nDEBUG: Fetching {debug_url}")
-    debug_response = requests.get(debug_url, headers=headers, timeout=10)
-    debug_soup = BeautifulSoup(debug_response.text, "html.parser")
-    print(debug_soup.prettify()[:5000])  # Print first 5000 chars to inspect
-
-# Fetch detail pages for each event
-detailed_events = []
-
-for idx, event in enumerate(all_events):
-    try:
-        detail_url = base_url + event["link"]
-        print(f"Fetching event {idx+1}/{len(all_events)}: {event['title']}")
-        
-        detail_response = requests.get(detail_url, headers=headers, timeout=10)
-        detail_response.raise_for_status()
-        detail_soup = BeautifulSoup(detail_response.text, "html.parser")
-        
-        # Try multiple selectors for agenda and minutes
-        agenda_section = detail_soup.find("div", {"class": ["agenda", "icrt-calendarContentSideContent"]})
-        agenda_html = str(agenda_section) if agenda_section else None
-        
-        minutes_section = detail_soup.find("div", {"class": "minutes"})
-        minutes_html = str(minutes_section) if minutes_section else None
-        
-        detailed_events.append({
-            "date": event["date"],
-            "title": event["title"],
-            "link": event["link"],
-            "agenda_html": agenda_html,
-            "minutes_html": minutes_html
-        })
-        
-        time.sleep(0.5)  # Be respectful with requests
-        
-    except Exception as e:
-        print(f"Error fetching {event['link']}: {e}")
-        detailed_events.append({
-            "date": event["date"],
-            "title": event["title"],
-            "link": event["link"],
-            "agenda_html": None,
-            "minutes_html": None,
-            "error": str(e)
-        })
-
-# Save to JSON file
-with open("events_detailed.json", "w") as f:
-    json.dump(detailed_events, f, indent=2)
-
-print(f"Extracted {len(detailed_events)} events with details")
+print(f"\nSaved {len(meeting_data)} total meetings to meeting_data.json")
