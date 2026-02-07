@@ -10,7 +10,7 @@ sys.path.insert(0, str(backend_dir))
 from chatbot_module.chatbot import EventsChatbot
 
 main_bp = Blueprint('main', __name__)
-chat_bp = Blueprint('chat', __name__, url_prefix='/chat')
+chat_bp = Blueprint('chat', __name__)
 
 # Initialize chatbot (will be created on first use)
 chatbot_instance = None
@@ -35,7 +35,7 @@ def get_stats():
     """Get dashboard statistics"""
     return jsonify(STATS)
 
-@chat_bp.route('', methods=['POST'])
+@chat_bp.route('/chat', methods=['POST'])
 def chat():
     """Handle chat messages with local JSON search and AI fallback"""
     try:
@@ -57,7 +57,7 @@ def chat():
             loop.close()
         
         return jsonify({
-            'reply': response_data['response'],
+            'response': response_data['response'],
             'source': response_data['source'],
             'events': response_data.get('events', [])
         })

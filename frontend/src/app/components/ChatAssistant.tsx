@@ -54,7 +54,7 @@ export default function ChatAssistant() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col h-[600px]">
+    <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col w-full max-w-2xl h-[calc(100vh-2rem)]">
       <h2 className="text-2xl font-bold text-gray-900 mb-4">AI Assistant</h2>
 
       {/* Messages Container */}
