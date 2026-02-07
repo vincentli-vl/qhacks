@@ -11,37 +11,37 @@ export default function Sidenav() {
           width={400}
           height={400}
         />
-        <Link href="/" className="mt-10 ml-2 text-2xl font-serif">
+        <Link href="/" className="mt-10 ml-2 text-2xl font-serif hover:underline cursor-pointer">
           Home
         </Link>
-        <Link href="/timeline" className="mt-10 ml-2 text-2xl font-serif">
+        <Link href="/timeline" className="mt-10 ml-2 text-2xl font-serif hover:underline cursor-pointer">
           Timeline
         </Link>
-        <Link href="/assistant" className="mt-10 ml-2 text-2xl font-serif">
+        <Link href="/assistant" className="mt-10 ml-2 text-2xl font-serif hover:underline cursor-pointer">
           Assistant
         </Link>
         <Link
           href="/meeting-minutes"
-          className="mt-10 ml-2 text-2xl font-serif"
+          className="mt-10 ml-2 text-2xl font-serif hover:underline cursor-pointer"
         >
           Meeting Minutes
         </Link>
         <Link
           href="/pending-requests"
-          className="mt-10 ml-2 text-2xl font-serif"
+          className="mt-10 ml-2 text-2xl font-serif hover:underline cursor-pointer"
         >
           Pending Requests
         </Link>
         <div className="fixed bottom-10 left-3">
           <Link
             href="/help"
-            className="mt-10 ml-4 text-2xl font-serif flex items-center gap-4"
+            className="mt-10 ml-2 text-2xl font-serif hover:underline cursor-pointer"
           >
             Help
           </Link>
           <Link
             href="/settings"
-            className="mt-10 ml-4 text-2xl font-serif flex items-center gap-4"
+            className="mt-10 ml-2 text-2xl font-serif hover:underline cursor-pointer"
           >
             Settings
             <svg
@@ -58,7 +58,7 @@ export default function Sidenav() {
           </Link>
           <Link
             href="/profile"
-            className="mt-10 ml-2 text-2xl font-serif flex items-center gap-4"
+            className="mt-10 ml-2 text-2xl font-serif hover:underline cursor-pointer"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
