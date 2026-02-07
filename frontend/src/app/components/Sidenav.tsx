@@ -3,22 +3,30 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+interface NavLinkProps {
+  href: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+}
+
+function NavLink({ href, children, onClick }: NavLinkProps) {
+  return (
+    <Link
+      href={href}
+      className="block px-4 py-3 text-lg font-serif hover:bg-opacity-80 transition rounded-md hover:underline"
+      onClick={onClick}
+    >
+      {children}
+    </Link>
+  );
+}
+
 export default function Sidenav() {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
-
-  const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
-    <Link
-      href={href}
-      className="block px-4 py-3 text-lg font-serif hover:bg-opacity-80 transition rounded-md hover:underline"
-      onClick={() => setIsOpen(false)}
-    >
-      {children}
-    </Link>
-  );
 
   return (
     <>
@@ -78,16 +86,16 @@ export default function Sidenav() {
 
           {/* Navigation Links */}
           <nav className="flex-1 overflow-y-auto">
-            <NavLink href="/">Home</NavLink>
-            <NavLink href="/timeline">Timeline</NavLink>
-            <NavLink href="/assistant">Assistant</NavLink>
-            <NavLink href="/meeting-minutes">Meeting Minutes</NavLink>
-            <NavLink href="/pending-requests">Pending Requests</NavLink>
+            <NavLink href="/" onClick={() => setIsOpen(false)}>Home</NavLink>
+            <NavLink href="/timeline" onClick={() => setIsOpen(false)}>Timeline</NavLink>
+            <NavLink href="/assistant" onClick={() => setIsOpen(false)}>Assistant</NavLink>
+            <NavLink href="/meeting-minutes" onClick={() => setIsOpen(false)}>Meeting Minutes</NavLink>
+            <NavLink href="/pending-requests" onClick={() => setIsOpen(false)}>Pending Requests</NavLink>
           </nav>
 
           {/* Bottom Navigation */}
           <div className="border-t border-white border-opacity-20 p-4 space-y-2">
-            <NavLink href="/help">Help</NavLink>
+            <NavLink href="/help" onClick={() => setIsOpen(false)}>Help</NavLink>
             <Link
               href="/settings"
               className="flex items-center gap-3 px-4 py-3 text-lg font-serif hover:bg-opacity-80 transition rounded-md hover:underline"

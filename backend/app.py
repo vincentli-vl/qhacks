@@ -5,7 +5,11 @@ from pathlib import Path
 from app.routes import main_bp, chat_bp
 
 app = Flask(__name__)
-CORS(app)
+CORS(
+    app,
+    resources={r"/*": {"origins": "http://localhost:3000"}}
+)
+
 
 # Register blueprints
 app.register_blueprint(main_bp, url_prefix='/api')
@@ -22,4 +26,4 @@ def get_events():
     return jsonify(events_data)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, host="localhost", port=5000)
