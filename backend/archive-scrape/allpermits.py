@@ -31,7 +31,7 @@ START_PAGES = [
     ]
 
 
-DATA_DIR = "data"
+DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 MAX_DEPTH = 2  # how deep to follow internal links
 
 session = requests.Session()

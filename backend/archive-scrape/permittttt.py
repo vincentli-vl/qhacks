@@ -69,8 +69,9 @@ def crawl_page(url):
             })
 
 def save_output():
-    os.makedirs("data", exist_ok=True)
-    with open("data/building_permits_archive.json", "w", encoding="utf-8") as f:
+    output_dir = os.path.join(os.path.dirname(__file__), "..", "data")
+    os.makedirs(output_dir, exist_ok=True)
+    with open(os.path.join(output_dir, "building_permits_archive.json"), "w", encoding="utf-8") as f:
         json.dump(archive, f, indent=2, ensure_ascii=False)
     print(f"Saved {len(archive)} items to building_permits_archive.json")
 
