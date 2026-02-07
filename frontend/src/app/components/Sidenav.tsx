@@ -35,13 +35,13 @@ export default function Sidenav() {
         <div className="fixed bottom-10 left-3">
           <Link
             href="/help"
-            className="mt-10 ml-2 text-2xl font-serif hover:underline cursor-pointer"
+            className="mt-10 ml-4 text-2xl font-serif hover:underline cursor-pointer"
           >
             Help
           </Link>
           <Link
             href="/settings"
-            className="mt-10 ml-2 text-2xl font-serif hover:underline cursor-pointer"
+            className="mt-10 ml-4 text-2xl font-serif hover:underline cursor-pointer flex gap-4"
           >
             Settings
             <svg
@@ -58,7 +58,7 @@ export default function Sidenav() {
           </Link>
           <Link
             href="/profile"
-            className="mt-10 ml-2 text-2xl font-serif hover:underline cursor-pointer"
+            className="mt-10 ml-2 text-2xl font-serif hover:underline cursor-pointer flex gap-4"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
