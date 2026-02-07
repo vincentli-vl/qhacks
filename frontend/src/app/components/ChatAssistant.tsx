@@ -117,13 +117,13 @@ export default function ChatAssistant() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col w-full max-w-4xl h-[calc(100vh-2rem)]">
-      <h2 className="text-2xl font-bold text-gray-900 mb-4">AI Assistant</h2>
+    <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 flex flex-col w-full max-w-4xl h-[calc(100vh-2rem)] sm:h-[calc(100vh-3rem)]">
+      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">AI Assistant</h2>
 
       {/* Messages Container */}
       <div className="flex-1 overflow-y-auto mb-4 space-y-4">
         {messages.length === 0 && (
-          <p className="text-gray-500 text-center text-sm">
+          <p className="text-gray-500 text-center text-xs sm:text-sm">
             Start a conversation about Kingston city services and events
           </p>
         )}
@@ -138,13 +138,13 @@ export default function ChatAssistant() {
                 }`}
               >
                 <div
-                  className={`max-w-md px-4 py-2 rounded-lg ${
+                  className={`max-w-xs sm:max-w-md px-4 py-2 rounded-lg ${
                     msg.role === "user"
                       ? "bg-indigo-600 text-white"
                       : "bg-gray-200 text-gray-900"
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                  <p className="text-xs sm:text-sm whitespace-pre-wrap break-words">{msg.content}</p>
                 </div>
               </div>
             )}
@@ -153,7 +153,7 @@ export default function ChatAssistant() {
             {msg.role === "assistant" && msg.events && msg.events.length > 0 && (
               <>
                 {msg.source === "local" && msg.searchQuery && (
-                  <p className="text-sm text-gray-700 mb-3 font-medium">
+                  <p className="text-xs sm:text-sm text-gray-700 mb-3 font-medium">
                     I found <span className="font-bold text-indigo-600">{msg.events.length} result{msg.events.length !== 1 ? "s" : ""}</span> regarding <span className="font-semibold text-indigo-600">&apos;{msg.searchQuery}&apos;</span>:
                   </p>
                 )}
@@ -165,12 +165,12 @@ export default function ChatAssistant() {
                         const category = eventObj.category || "data";
                         handleResultClick(eventObj.data, category);
                       }}
-                      className="bg-indigo-50 border-2 border-indigo-200 rounded-lg p-4 cursor-pointer hover:shadow-md hover:border-indigo-400 transition"
+                      className="bg-indigo-50 border-2 border-indigo-200 rounded-lg p-3 sm:p-4 cursor-pointer hover:shadow-md hover:border-indigo-400 transition"
                     >
                       <div className="text-xs font-semibold text-indigo-600 mb-2 uppercase">
                         {(eventObj.category || "Data").replace(/_/g, " ")}
                       </div>
-                      <div className="text-sm text-gray-700 line-clamp-4">
+                      <div className="text-xs sm:text-sm text-gray-700 line-clamp-4">
                         {JSON.stringify(eventObj.data)
                           .substring(0, 150)
                           .replace(/[{}":]/g, "")}
@@ -187,7 +187,7 @@ export default function ChatAssistant() {
           </div>
         ))}
         {loading && (
-          <p className="text-gray-500 text-sm">Assistant is typing...</p>
+          <p className="text-gray-500 text-xs sm:text-sm">Assistant is typing...</p>
         )}
         <div ref={messagesEndRef} />
       </div>
@@ -198,14 +198,14 @@ export default function ChatAssistant() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask about events, permits, licenses..."
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black"
+          placeholder="Ask about events, permits..."
+          className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black text-sm sm:text-base"
           disabled={loading}
         />
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 transition"
+          className="px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 transition text-sm sm:text-base font-medium"
         >
           Send
         </button>

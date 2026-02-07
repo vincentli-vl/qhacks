@@ -79,12 +79,12 @@ export default function Help() {
   };
 
   return (
-    <div className="p-8 ml-64">
+    <div className="p-4 sm:p-6 md:p-8">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Help & FAQ</h1>
-          <p className="text-gray-600">
+        <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Help & FAQ</h1>
+          <p className="text-gray-600 text-sm sm:text-base">
             Find answers to common questions about using Kingston Records Hub
           </p>
         </div>
@@ -98,9 +98,9 @@ export default function Help() {
             >
               <button
                 onClick={() => toggleExpand(faq.id)}
-                className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition"
+                className="w-full flex items-center justify-between p-4 sm:p-6 text-left hover:bg-gray-50 transition"
               >
-                <h3 className="text-lg font-semibold text-gray-900 pr-4">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 pr-4">
                   {faq.question}
                 </h3>
                 <svg
@@ -122,8 +122,8 @@ export default function Help() {
 
               {/* Expanded Content */}
               {expandedId === faq.id && (
-                <div className="px-6 pb-6 bg-gray-50 border-t border-gray-200">
-                  <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
+                <div className="px-4 sm:px-6 pb-6 bg-gray-50 border-t border-gray-200">
+                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed">{faq.answer}</p>
                 </div>
               )}
             </div>
@@ -131,15 +131,15 @@ export default function Help() {
         </div>
 
         {/* Contact Section */}
-        <div className="mt-12 bg-indigo-50 rounded-lg p-8 border border-indigo-200">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Can't find what you're looking for?
+        <div className="mt-12 bg-indigo-50 rounded-lg p-6 sm:p-8 border border-indigo-200">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            Can&apos;t find what you&apos;re looking for?
           </h2>
-          <p className="text-gray-700 mb-4">
+          <p className="text-gray-700 text-sm sm:text-base mb-4">
             If you have additional questions or need further assistance, please
             reach out to our support team.
           </p>
-          <button className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium">
+          <button className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium text-sm sm:text-base">
             Contact Support
           </button>
         </div>

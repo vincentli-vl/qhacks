@@ -16,7 +16,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Sidenav />
-        <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 md:ml-64">
           {children}
         </main>
       </body>

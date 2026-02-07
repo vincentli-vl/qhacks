@@ -142,23 +142,25 @@ export default function PendingRequests() {
           body: JSON.stringify(request),
         });
 
-        // If failed, also add to archive
-        if (decision === "failed") {
-          const archiveData = {
-            query: `Failed ${request.type}: ${request.title}`,
-            response: `${request.description}\n\nFailure Reason: ${failureReason}`,
-            timestamp: String(Date.now()),
-          };
+        // Archive both passed and failed requests
+        const archiveData = {
+          query: `${decision === "passed" ? "Approved" : "Rejected"} ${request.type}: ${request.title}`,
+          response: `${request.description}${decision === "failed" ? `\n\nRejection Reason: ${failureReason}` : ""}`,
+          timestamp: String(Date.now()),
+          status: decision,
+          type: request.type,
+          submittedBy: request.submittedBy,
+          details: request.details,
+        };
 
-          try {
-            await fetch("http://localhost:5000/api/pending-requests/archive", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(archiveData),
-            });
-          } catch (e) {
-            console.error("Error archiving failed request", e);
-          }
+        try {
+          await fetch("http://localhost:5000/api/pending-requests/archive", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(archiveData),
+          });
+        } catch (e) {
+          console.error("Error archiving request", e);
         }
       }
     } catch (e) {
@@ -171,27 +173,27 @@ export default function PendingRequests() {
   const failedRequests = requests.filter((r) => r.status === "failed");
 
   return (
-    <div className="p-8 ml-64">
+    <div className="p-4 sm:p-6 md:p-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Pending Requests</h1>
-          <p className="text-gray-600">
+        <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Pending Requests</h1>
+          <p className="text-gray-600 text-sm sm:text-base">
             Submit and manage pending policies and permits
           </p>
         </div>
 
         {/* Add New Request Buttons */}
-        <div className="flex gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <button
             onClick={() => setShowPolicyForm(!showPolicyForm)}
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium text-sm sm:text-base"
           >
             + Add Policy
           </button>
           <button
             onClick={() => setShowPermitForm(!showPermitForm)}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm sm:text-base"
           >
             + Add Permit
           </button>
@@ -199,46 +201,46 @@ export default function PendingRequests() {
 
         {/* Policy Form */}
         {showPolicyForm && (
-          <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Add New Policy</h2>
+          <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Add New Policy</h2>
             <div className="space-y-4">
               <input
                 type="text"
                 placeholder="Policy Title *"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black text-sm sm:text-base"
               />
               <textarea
                 placeholder="Policy Description *"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 h-24 text-black"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 h-24 text-black text-sm sm:text-base"
               />
               <input
                 type="text"
                 placeholder="Submitted By *"
                 value={formData.submittedBy}
                 onChange={(e) => setFormData({ ...formData, submittedBy: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black text-sm sm:text-base"
               />
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Details
                 </label>
                 {formData.details.map((detail, idx) => (
-                  <div key={idx} className="flex gap-2 mb-2">
+                  <div key={idx} className="flex flex-col sm:flex-row gap-2 mb-2">
                     <input
                       type="text"
                       placeholder={`Detail ${idx + 1}`}
                       value={detail}
                       onChange={(e) => handleDetailChange(idx, e.target.value)}
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black text-sm sm:text-base"
                     />
                     {formData.details.length > 1 && (
                       <button
                         onClick={() => removeDetailField(idx)}
-                        className="px-3 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
+                        className="px-3 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition text-sm sm:text-base"
                       >
                         Remove
                       </button>
@@ -247,7 +249,7 @@ export default function PendingRequests() {
                 ))}
                 <button
                   onClick={addDetailField}
-                  className="text-indigo-600 hover:text-indigo-700 font-medium text-sm"
+                  className="text-indigo-600 hover:text-indigo-700 font-medium text-xs sm:text-sm"
                 >
                   + Add Detail
                 </button>

@@ -46,7 +46,7 @@ export default function ArchivePage() {
 
   if (!item) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-6 md:p-8">
         <button
           onClick={() => router.back()}
           className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 mb-4"
@@ -72,7 +72,7 @@ export default function ArchivePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-6 md:p-8">
       <div className="max-w-4xl mx-auto">
         <button
           onClick={() => router.back()}
@@ -94,8 +94,8 @@ export default function ArchivePage() {
           Back
         </button>
 
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 capitalize">
+        <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 capitalize">
             {item.category.replace(/_/g, " ")} Details
           </h1>
           <p className="text-gray-500 text-sm mb-6">
@@ -106,7 +106,7 @@ export default function ArchivePage() {
             {Object.entries(item.data).map(([key, value]) => (
               <div
                 key={key}
-                className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition"
+                className="border border-gray-200 rounded-lg p-4 sm:p-6 hover:bg-gray-50 transition"
               >
                 <h3 className="text-lg font-semibold text-gray-900 mb-3 capitalize">
                   {key.replace(/_/g, " ")}

@@ -25,6 +25,7 @@ interface AllData {
 }
 
 const STORAGE_KEY = "chatbot_messages";
+const FILTER_STATE_KEY = "home_page_filters";
 
 export default function Home() {
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
@@ -50,6 +51,21 @@ export default function Home() {
       }
     }
 
+    // Restore filter state if coming back from archive
+    const savedFilters = sessionStorage.getItem(FILTER_STATE_KEY);
+    if (savedFilters) {
+      try {
+        const filters = JSON.parse(savedFilters);
+        setActiveTab(filters.activeTab || "chat");
+        setSearchQuery(filters.searchQuery || "");
+        setSearchChatQuery(filters.searchChatQuery || "");
+        setSelectedCategory(filters.selectedCategory || null);
+        sessionStorage.removeItem(FILTER_STATE_KEY);
+      } catch (e) {
+        console.error("Error restoring filters", e);
+      }
+    }
+
     // Load all data from backend
     fetchAllData();
   }, []);
@@ -66,6 +82,16 @@ export default function Home() {
   };
 
   const handleDataClick = (item: any, category: string) => {
+    // Save current filter state before navigating
+    sessionStorage.setItem(
+      FILTER_STATE_KEY,
+      JSON.stringify({
+        activeTab,
+        searchQuery,
+        searchChatQuery,
+        selectedCategory,
+      })
+    );
     const encodedData = encodeURIComponent(JSON.stringify(item));
     router.push(`/archive?data=${encodedData}&category=${category}`);
   };
@@ -82,12 +108,12 @@ export default function Home() {
   }
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">
+    <div className="p-4 sm:p-6 md:p-8 max-w-6xl mx-auto">
+      <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-8">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
           Kingston Records Hub
         </h1>
-        <p className="text-gray-600">
+        <p className="text-gray-600 text-sm sm:text-base">
           View your chat history and archived records
         </p>
       </div>

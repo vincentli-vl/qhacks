@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface TimelineEvent {
-  id: number;
+  id: number | string;
   date: string;
   title: string;
   description: string;
@@ -11,6 +11,7 @@ interface TimelineEvent {
   status: "in-progress" | "completed" | "failed";
   details: string[];
   reason?: string;
+  isPendingRequest?: boolean;
 }
 
 const timelineData: TimelineEvent[] = [
@@ -173,8 +174,43 @@ const timelineData: TimelineEvent[] = [
 export default function Timeline() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "in-progress" | "completed" | "failed">("all");
+  const [allEvents, setAllEvents] = useState<TimelineEvent[]>(timelineData);
 
-  const filteredTimeline = timelineData.filter((event) => {
+  // Fetch pending requests and add them to timeline
+  useEffect(() => {
+    const fetchPendingRequests = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/pending-requests");
+        if (response.ok) {
+          const requests = await response.json();
+          
+          // Convert pending requests to timeline events
+          const requestEvents: TimelineEvent[] = requests
+            .filter((req: any) => req.status === "passed" || req.status === "failed")
+            .map((req: any) => ({
+              id: req.id,
+              date: req.submittedDate || new Date().toLocaleDateString(),
+              title: `${req.status === "passed" ? "✓ Approved" : "✗ Rejected"}: ${req.title}`,
+              description: req.description,
+              type: req.status === "passed" ? ("decision" as const) : ("rejection" as const),
+              status: req.status === "passed" ? ("completed" as const) : ("failed" as const),
+              details: req.details || [],
+              reason: req.failureReason,
+              isPendingRequest: true,
+            }));
+          
+          setAllEvents([...timelineData, ...requestEvents]);
+        }
+      } catch (error) {
+        console.error("Error fetching pending requests:", error);
+        setAllEvents(timelineData);
+      }
+    };
+
+    fetchPendingRequests();
+  }, []);
+
+  const filteredTimeline = allEvents.filter((event) => {
     const matchesSearch =
       searchQuery === "" ||
       event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -215,32 +251,32 @@ export default function Timeline() {
   };
 
   return (
-    <div className="p-8 ml-64">
+    <div className="p-4 sm:p-6 md:p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Policy Timeline</h1>
-          <p className="text-gray-600">
+        <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Policy Timeline</h1>
+          <p className="text-gray-600 text-sm sm:text-base">
             Track the journey of policies from proposal to implementation
           </p>
         </div>
 
         {/* Search and Filter Section */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8 space-y-4">
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-8 space-y-4">
           <div>
             <input
               type="text"
-              placeholder="Search timeline by policy name, description, or details..."
+              placeholder="Search timeline..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black text-sm sm:text-base"
             />
           </div>
 
-          <div className="flex gap-3 flex-wrap">
+          <div className="flex gap-2 sm:gap-3 flex-wrap">
             <button
               onClick={() => setStatusFilter("all")}
-              className={`px-4 py-2 rounded-full font-medium transition ${
+              className={`px-3 sm:px-4 py-2 rounded-full font-medium transition text-xs sm:text-sm ${
                 statusFilter === "all"
                   ? "bg-indigo-600 text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -250,7 +286,7 @@ export default function Timeline() {
             </button>
             <button
               onClick={() => setStatusFilter("in-progress")}
-              className={`px-4 py-2 rounded-full font-medium transition ${
+              className={`px-3 sm:px-4 py-2 rounded-full font-medium transition text-xs sm:text-sm ${
                 statusFilter === "in-progress"
                   ? "bg-blue-600 text-white"
                   : "bg-blue-100 text-blue-800 hover:bg-blue-200"
@@ -260,7 +296,7 @@ export default function Timeline() {
             </button>
             <button
               onClick={() => setStatusFilter("completed")}
-              className={`px-4 py-2 rounded-full font-medium transition ${
+              className={`px-3 sm:px-4 py-2 rounded-full font-medium transition text-xs sm:text-sm ${
                 statusFilter === "completed"
                   ? "bg-green-600 text-white"
                   : "bg-green-100 text-green-800 hover:bg-green-200"
@@ -270,7 +306,7 @@ export default function Timeline() {
             </button>
             <button
               onClick={() => setStatusFilter("failed")}
-              className={`px-4 py-2 rounded-full font-medium transition ${
+              className={`px-3 sm:px-4 py-2 rounded-full font-medium transition text-xs sm:text-sm ${
                 statusFilter === "failed"
                   ? "bg-red-600 text-white"
                   : "bg-red-100 text-red-800 hover:bg-red-200"
@@ -284,33 +320,33 @@ export default function Timeline() {
         {/* Timeline */}
         {filteredTimeline.length === 0 ? (
           <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-            <p className="text-gray-500 text-lg">
-              No timeline events found matching your search. Try different keywords.
+            <p className="text-gray-500 text-base sm:text-lg">
+              No timeline events found matching your search.
             </p>
           </div>
         ) : (
           <div className="relative">
-            {/* Central line */}
-            <div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-400 to-indigo-600"></div>
+            {/* Central line - hidden on mobile */}
+            <div className="hidden sm:block absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-400 to-indigo-600"></div>
 
             {/* Timeline events */}
             <div className="space-y-6">
               {filteredTimeline.map((event) => (
-                <div key={event.id} className="relative pl-24">
-                  {/* Timeline dot */}
-                  <div className="absolute left-0 w-16 h-16 bg-white rounded-full border-4 border-indigo-600 flex items-center justify-center text-2xl shadow-md">
+                <div key={event.id} className="relative sm:pl-24 pl-6">
+                  {/* Timeline dot - repositioned for mobile */}
+                  <div className="absolute left-0 w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full border-4 border-indigo-600 flex items-center justify-center text-lg sm:text-2xl shadow-md">
                     {getTypeIcon(event.type)}
                   </div>
 
                   {/* Event card */}
-                  <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition">
-                    <div className="flex items-start justify-between gap-4 mb-3">
+                  <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 hover:shadow-xl transition">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-3">
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900">{event.title}</h3>
-                        <p className="text-sm text-gray-500 mt-1">{event.date}</p>
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900">{event.title}</h3>
+                        <p className="text-xs sm:text-sm text-gray-500 mt-1">{event.date}</p>
                       </div>
                       <span
-                        className={`px-4 py-1 rounded-full text-sm font-semibold border ${getStatusColor(
+                        className={`px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-semibold border whitespace-nowrap ${getStatusColor(
                           event.status
                         )}`}
                       >
@@ -322,15 +358,15 @@ export default function Timeline() {
                       </span>
                     </div>
 
-                    <p className="text-gray-700 mb-4">{event.description}</p>
+                    <p className="text-gray-700 mb-4 text-sm sm:text-base">{event.description}</p>
 
                     {/* Details */}
-                    <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                      <h4 className="font-semibold text-gray-900 mb-2">Details:</h4>
+                    <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mb-4">
+                      <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Details:</h4>
                       <ul className="space-y-2">
                         {event.details.map((detail, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-gray-700 text-sm">
-                            <span className="text-indigo-600 mt-1">•</span>
+                          <li key={idx} className="flex items-start gap-2 text-gray-700 text-xs sm:text-sm">
+                            <span className="text-indigo-600 mt-1 flex-shrink-0">•</span>
                             <span>{detail}</span>
                           </li>
                         ))}
@@ -339,9 +375,9 @@ export default function Timeline() {
 
                     {/* Failure reason if applicable */}
                     {event.reason && (
-                      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                        <h4 className="font-semibold text-red-900 mb-1">Why it failed/was delayed:</h4>
-                        <p className="text-red-800 text-sm">{event.reason}</p>
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4">
+                        <h4 className="font-semibold text-red-900 mb-1 text-sm sm:text-base">Why it failed/was delayed:</h4>
+                        <p className="text-red-800 text-xs sm:text-sm">{event.reason}</p>
                       </div>
                     )}
                   </div>
@@ -352,24 +388,24 @@ export default function Timeline() {
         )}
 
         {/* Summary Stats */}
-        <div className="grid grid-cols-3 gap-4 mt-12">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12">
           <div className="bg-blue-50 rounded-lg p-6 text-center border border-blue-200">
-            <p className="text-3xl font-bold text-blue-600">
-              {timelineData.filter((e) => e.status === "in-progress").length}
+            <p className="text-2xl sm:text-3xl font-bold text-blue-600">
+              {allEvents.filter((e) => e.status === "in-progress").length}
             </p>
-            <p className="text-gray-700 mt-2">In Progress</p>
+            <p className="text-gray-700 text-sm sm:text-base mt-2">In Progress</p>
           </div>
           <div className="bg-green-50 rounded-lg p-6 text-center border border-green-200">
-            <p className="text-3xl font-bold text-green-600">
-              {timelineData.filter((e) => e.status === "completed").length}
+            <p className="text-2xl sm:text-3xl font-bold text-green-600">
+              {allEvents.filter((e) => e.status === "completed").length}
             </p>
-            <p className="text-gray-700 mt-2">Completed</p>
+            <p className="text-gray-700 text-sm sm:text-base mt-2">Completed</p>
           </div>
           <div className="bg-red-50 rounded-lg p-6 text-center border border-red-200">
-            <p className="text-3xl font-bold text-red-600">
-              {timelineData.filter((e) => e.status === "failed").length}
+            <p className="text-2xl sm:text-3xl font-bold text-red-600">
+              {allEvents.filter((e) => e.status === "failed").length}
             </p>
-            <p className="text-gray-700 mt-2">Failed/Delayed</p>
+            <p className="text-gray-700 text-sm sm:text-base mt-2">Failed/Delayed</p>
           </div>
         </div>
       </div>
