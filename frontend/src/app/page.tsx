@@ -85,7 +85,7 @@ export default function Home() {
 
   const fetchAllData = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/data");
+      const response = await axios.get("http://localhost:5001/api/data");
       setAllData(response.data);
     } catch (e) {
       console.error("Error loading data", e);
@@ -130,14 +130,6 @@ export default function Home() {
               height={200}
               className="w-full"
             />
-      </div>
-      <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-8">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-          Kingston Records Hub
-        </h1>
-        <p className="text-gray-600 text-sm sm:text-base">
-          View your chat history and archived records
-        </p>
       </div>
 
       {/* Tabs */}

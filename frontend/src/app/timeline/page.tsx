@@ -34,9 +34,9 @@ export default function Timeline() {
       try {
         // Fetch all data from the API
         const [dataResponse, pendingResponse, meetingsResponse] = await Promise.all([
-          axios.get("http://localhost:5000/api/data"),
-          axios.get("http://localhost:5000/api/pending-requests"),
-          axios.get("http://localhost:5000/api/events"),
+          axios.get("http://localhost:5001/api/data"),
+          axios.get("http://localhost:5001/api/pending-requests"),
+          axios.get("http://localhost:5001/api/events"),
         ]);
 
         const allData = dataResponse.data;

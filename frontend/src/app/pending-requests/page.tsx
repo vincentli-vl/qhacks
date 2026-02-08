@@ -28,7 +28,7 @@ export default function PendingRequests() {
 
   const fetchRequests = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/pending-requests");
+      const response = await fetch("http://localhost:5001/api/pending-requests");
       if (response.ok) {
         const data = await response.json();
         setRequests(data);
@@ -44,7 +44,7 @@ export default function PendingRequests() {
   useEffect(() => {
     (async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/pending-requests");
+        const response = await fetch("http://localhost:5001/api/pending-requests");
         if (response.ok) {
           const data = await response.json();
           setRequests(data);
@@ -91,7 +91,7 @@ export default function PendingRequests() {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/pending-requests", {
+      const response = await fetch("http://localhost:5001/api/pending-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newRequest),
@@ -136,7 +136,7 @@ export default function PendingRequests() {
     try {
       const request = updatedRequests.find((r) => r.id === id);
       if (request) {
-        await fetch("http://localhost:5000/api/pending-requests", {
+        await fetch("http://localhost:5001/api/pending-requests", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(request),
@@ -154,7 +154,7 @@ export default function PendingRequests() {
         };
 
         try {
-          await fetch("http://localhost:5000/api/pending-requests/archive", {
+          await fetch("http://localhost:5001/api/pending-requests/archive", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(archiveData),
