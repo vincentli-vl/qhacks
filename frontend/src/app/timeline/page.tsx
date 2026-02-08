@@ -322,20 +322,42 @@ export default function Timeline() {
             <div className="space-y-6">
               {displayedEvents.map((event) => (
                 <div key={event.id} className="relative sm:pl-24 pl-6">
-                  {/* Timeline dot - repositioned for mobile */}
-                  <div className="absolute left-0 w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full border-4 border-[#22529F] flex items-center justify-center text-lg sm:text-2xl shadow-md">
-                    {getTypeIcon(event.type)}
+                  {/* Timeline dot - desktop only */}
+                  <div className="hidden sm:block absolute left-0 w-16 h-16 bg-white rounded-full border-4 border-[#22529F] flex items-center justify-center text-2xl shadow-md">
+                    <span className="block w-full h-full flex items-center justify-center text-2xl" style={{fontSize:'2rem'}}>{getTypeIcon(event.type)}</span>
                   </div>
 
                   {/* Event card */}
-                  <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 hover:shadow-xl transition">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-3">
-                      <div>
-                        <h3 className="text-lg sm:text-xl font-bold text-gray-900">{event.title}</h3>
-                        <p className="text-xs sm:text-sm text-gray-500 mt-1">{event.date}</p>
+                  <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 hover:shadow-xl transition flex flex-col">
+                    {/* Timeline dot - mobile only */}
+                    <div className="flex items-center mb-3 sm:hidden">
+                      <div className="w-10 h-10 bg-white rounded-full border-4 border-[#22529F] flex items-center justify-center text-base shadow-md mr-3 shrink-0">
+                        <span className="block w-full h-full flex items-center justify-center text-base" style={{fontSize:'1.5rem'}}>{getTypeIcon(event.type)}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-gray-900">{event.title}</h3>
+                        <p className="text-xs text-gray-500 mt-1">{event.date}</p>
                       </div>
                       <span
-                        className={`px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-semibold border whitespace-nowrap ${getStatusColor(
+                        className={`px-3 py-1 rounded-full text-xs font-semibold border whitespace-nowrap ${getStatusColor(
+                          event.status
+                        )}`}
+                      >
+                        {event.status === "in-progress"
+                          ? "In Progress"
+                          : event.status === "completed"
+                          ? "Completed"
+                          : "Failed/Delayed"}
+                      </span>
+                    </div>
+                    {/* Desktop title/status layout */}
+                    <div className="hidden sm:flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-3">
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-900">{event.title}</h3>
+                        <p className="text-sm text-gray-500 mt-1">{event.date}</p>
+                      </div>
+                      <span
+                        className={`px-4 py-1 rounded-full text-sm font-semibold border whitespace-nowrap ${getStatusColor(
                           event.status
                         )}`}
                       >
