@@ -330,7 +330,44 @@ def process_audio():
             # Run diarization
             print("Running speaker diarization...", flush=True)
             try:
-                diarization_result = pipeline(wav_path)
+                # Configure pipeline for better speaker detection
+                # For pyannote 3.1, try different API approaches
+                # Since we know there are 2 speakers (male and female), we'll try to force detection
+                
+                # Method 1: Try with explicit speaker count (2 speakers) using dict format
+                diarization_result = None
+                try:
+                    diarization_result = pipeline(
+                        {"uri": "audio", "audio": wav_path},
+                        min_speakers=2,
+                        max_speakers=2
+                    )
+                    print("✓ Diarization with min_speakers=2, max_speakers=2 (dict format)", flush=True)
+                except Exception as e1:
+                    print(f"Method 1 failed: {e1}", flush=True)
+                    # Method 2: Try with file path and parameters
+                    try:
+                        diarization_result = pipeline(wav_path, min_speakers=2, max_speakers=2)
+                        print("✓ Diarization with min_speakers=2, max_speakers=2 (path format)", flush=True)
+                    except Exception as e2:
+                        print(f"Method 2 failed: {e2}", flush=True)
+                        # Method 3: Try with flexible speaker count
+                        try:
+                            diarization_result = pipeline(
+                                {"uri": "audio", "audio": wav_path},
+                                min_speakers=1,
+                                max_speakers=10
+                            )
+                            print("✓ Diarization with flexible speaker count (dict format)", flush=True)
+                        except Exception as e3:
+                            print(f"Method 3 failed: {e3}", flush=True)
+                            # Method 4: Simple call
+                            diarization_result = pipeline(wav_path)
+                            print("✓ Diarization with simple call (no parameters)", flush=True)
+                
+                if diarization_result is None:
+                    raise Exception("All diarization methods failed")
+                
                 print(f"Diarization completed. Type: {type(diarization_result)}", flush=True)
                 
                 # Handle different return types from pyannote pipeline
@@ -345,6 +382,23 @@ def process_audio():
                     # Try to use it as annotation directly
                     diarization = diarization_result
                     print("Using diarization result as annotation", flush=True)
+                
+                # Debug: Print all detected speakers and segments
+                speakers = set()
+                segment_count = 0
+                try:
+                    for turn, _, speaker in diarization.itertracks(yield_label=True):
+                        speakers.add(speaker)
+                        segment_count += 1
+                        print(f"  Segment {segment_count}: {speaker} from {turn.start:.2f}s to {turn.end:.2f}s", flush=True)
+                    print(f"Total diarization segments: {segment_count}", flush=True)
+                    print(f"Detected {len(speakers)} unique speaker(s): {sorted(list(speakers))}", flush=True)
+                except Exception as e:
+                    print(f"Could not extract speaker list: {e}", flush=True)
+                    # Try alternative method
+                    if hasattr(diarization, 'labels'):
+                        speakers = list(diarization.labels())
+                        print(f"Detected speakers (via labels): {speakers}", flush=True)
             except Exception as e:
                 error_details = str(e)
                 print(f"Error during diarization: {error_details}", flush=True)
@@ -480,15 +534,32 @@ def process_audio():
             # Sort transcript segments by start time
             transcript_segments.sort(key=lambda x: x['start'])
             
-            # Create meeting object
+            # Save audio file to data directory
             from datetime import datetime
+            import shutil
+            data_path = Path(__file__).parent.parent / "data"
+            audio_dir = data_path / "recordings"
+            audio_dir.mkdir(exist_ok=True)
+            
+            # Create a unique filename
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            safe_meeting_name = "".join(c for c in meeting_name if c.isalnum() or c in (' ', '-', '_')).rstrip()
+            safe_meeting_name = safe_meeting_name.replace(' ', '_')[:50]  # Limit length
+            audio_filename = f"{timestamp}_{safe_meeting_name}.wav"
+            audio_file_path = audio_dir / audio_filename
+            
+            # Copy the WAV file to the recordings directory
+            shutil.copy2(wav_path, audio_file_path)
+            print(f"Saved audio file to: {audio_file_path}", flush=True)
+            
+            # Create meeting object
             new_meeting = {
                 'date': datetime.now().strftime('%B %d, %Y %I:%M %p'),
                 'meeting': meeting_name,
                 'meeting_url': '',  # No URL for recorded meetings
                 'documents': {},
                 'transcript': transcript_segments,
-                'audio_file': None  # We don't store the audio file, just the transcript
+                'audio_file': f'/api/recordings/{audio_filename}'  # API endpoint to serve the audio
             }
             
             # Save to meetings JSON
@@ -512,12 +583,14 @@ def process_audio():
                 'traceback': tb if os.getenv('FLASK_DEBUG') else None
             }), 500
         finally:
-            # Clean up temporary files
+            # Clean up temporary files (but keep the saved recording)
             try:
                 if os.path.exists(temp_audio_path):
                     os.unlink(temp_audio_path)
+                # Don't delete wav_path if we saved it to recordings directory
+                # Only delete if it's still in temp location
                 wav_path = temp_audio_path.rsplit('.', 1)[0] + '.wav'
-                if os.path.exists(wav_path):
+                if os.path.exists(wav_path) and 'recordings' not in str(wav_path):
                     os.unlink(wav_path)
             except Exception as cleanup_error:
                 print(f"Error cleaning up temp files: {cleanup_error}", flush=True)

@@ -16,6 +16,7 @@ interface Meeting {
   meeting_url: string;
   documents: Record<string, string>;
   transcript?: TranscriptSegment[];
+  audio_file?: string | null;
 }
 
 export default function Meetings() {
@@ -287,6 +288,25 @@ export default function Meetings() {
               {/* Show transcript prominently if available, even when details are collapsed */}
               {meeting.transcript && meeting.transcript.length > 0 && (
                 <div className="mt-4 pt-4 border-t">
+                  {/* Audio Player */}
+                  {meeting.audio_file && (
+                    <div className="mb-4 p-4 bg-indigo-50 rounded-lg">
+                      <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                        <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                        </svg>
+                        Meeting Recording
+                      </h4>
+                      <audio 
+                        controls 
+                        className="w-full"
+                        src={`http://localhost:5001${meeting.audio_file}`}
+                      >
+                        Your browser does not support the audio element.
+                      </audio>
+                    </div>
+                  )}
+                  
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
