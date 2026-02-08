@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 import asyncio
 import sys
 import json
+import traceback
 from pathlib import Path
 
 # Add the chatbot_module directory to the Python path
@@ -13,15 +14,11 @@ from chatbot_module.chatbot import EventsChatbot
 main_bp = Blueprint('main', __name__)
 chat_bp = Blueprint('chat', __name__)
 
-# Initialize chatbot (will be created on first use)
-chatbot_instance = None
-
+# Chatbot instance is created per request so each request runs in its own context
+# (avoids Backboard client/thread tied to a previous request's event loop causing 500 on second prompt)
 def get_chatbot():
-    """Get or create the chatbot instance"""
-    global chatbot_instance
-    if chatbot_instance is None:
-        chatbot_instance = EventsChatbot()
-    return chatbot_instance
+    """Create a fresh chatbot instance for this request."""
+    return EventsChatbot()
 
 def get_pending_requests_file():
     """Get path to pending requests JSON file"""
@@ -81,16 +78,13 @@ def get_all_data():
 def chat():
     """Handle chat messages with local JSON search and AI fallback"""
     try:
-        data = request.get_json()
-        message = data.get('message', '')
+        data = request.get_json() or {}
+        message = (data.get('message') or '').strip()
         
         if not message:
             return jsonify({'error': 'No message provided'}), 400
         
-        # Get chatbot instance
         chatbot = get_chatbot()
-        
-        # Run async chatbot response in sync context
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
@@ -99,15 +93,18 @@ def chat():
             loop.close()
         
         return jsonify({
-            'response': response_data['response'],
-            'source': response_data['source'],
+            'response': response_data.get('response', ''),
+            'source': response_data.get('source', 'ai'),
             'events': response_data.get('events', [])
         })
         
     except Exception as e:
+        tb = traceback.format_exc()
+        print(f"[CHAT 500] {e}\n{tb}", flush=True)
         return jsonify({
             'error': 'An error occurred processing your request',
-            'details': str(e)
+            'details': str(e),
+            'traceback': tb
         }), 500
 
 @main_bp.route('/pending-requests', methods=['GET'])

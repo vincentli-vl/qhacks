@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { encodeArchivePayload } from "./utils/archive";
 
 interface Message {
   role: "user" | "assistant";
@@ -26,6 +27,17 @@ interface AllData {
 
 const STORAGE_KEY = "chatbot_messages";
 const FILTER_STATE_KEY = "home_page_filters";
+
+function getSourceTitle(data: Record<string, any>): string {
+  if (!data || typeof data !== "object") return "View record";
+  const title =
+    data.heading || data.title || data.name || data.description;
+  if (title && typeof title === "string")
+    return title.length > 60 ? title.slice(0, 60) + "…" : title;
+  const text = data.text;
+  if (text && typeof text === "string") return text.slice(0, 50).trim() + "…";
+  return "View record";
+}
 
 export default function Home() {
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
@@ -82,7 +94,6 @@ export default function Home() {
   };
 
   const handleDataClick = (item: any, category: string) => {
-    // Save current filter state before navigating
     sessionStorage.setItem(
       FILTER_STATE_KEY,
       JSON.stringify({
@@ -92,8 +103,9 @@ export default function Home() {
         selectedCategory,
       })
     );
-    const encodedData = encodeURIComponent(JSON.stringify(item));
-    router.push(`/archive?data=${encodedData}&category=${category}`);
+    const payload = typeof item === "object" && item !== null ? item : { data: item };
+    const d = encodeArchivePayload(payload);
+    router.push(`/archive?d=${d}&category=${encodeURIComponent(category)}`);
   };
 
   const clearChatHistory = () => {
@@ -247,42 +259,51 @@ export default function Home() {
                       </p>
                       {msg.events && msg.events.length > 0 && (
                         <div className="mt-2 text-xs text-indigo-600 font-semibold">
-                          {msg.events.length} result(s)
+                          Linked to {msg.events.length} archive record{msg.events.length !== 1 ? "s" : ""}
                         </div>
                       )}
 
-                      {/* Show expanded results if this message is expanded and has events */}
+                      {/* Show expanded results — each links to the JSON data used for this answer */}
                       {expandedChatIndex === idx &&
                         msg.events &&
                         msg.events.length > 0 && (
                           <div className="mt-4 pt-4 border-t border-indigo-200 space-y-3">
                             <p className="text-xs font-semibold text-indigo-600">
-                              Results:
+                              Archive data used for this answer:
                             </p>
-                            {msg.events.map((eventObj, eventIdx) => (
-                              <div
-                                key={eventIdx}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  const category = eventObj.category || "data";
-                                  handleDataClick(eventObj.data, category);
-                                }}
-                                className="bg-white border border-indigo-200 rounded p-2 cursor-pointer hover:shadow-sm transition text-xs"
-                              >
-                                <div className="font-semibold text-indigo-600 mb-1">
-                                  {(eventObj.category || "Data").replace(
-                                    /_/g,
-                                    " ",
-                                  )}
+                            {msg.events.map((eventObj, eventIdx) => {
+                              const category = eventObj.category || "data";
+                              const data = eventObj.data || {};
+                              const title = getSourceTitle(data);
+                              return (
+                                <div
+                                  key={eventIdx}
+                                  role="button"
+                                  tabIndex={0}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDataClick(data, category);
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                      e.preventDefault();
+                                      handleDataClick(data, category);
+                                    }
+                                  }}
+                                  className="bg-white border border-indigo-200 rounded p-2 cursor-pointer hover:shadow-sm transition text-xs"
+                                >
+                                  <div className="font-semibold text-indigo-600 mb-1">
+                                    {(category as string).replace(/_/g, " ")}
+                                  </div>
+                                  <div className="text-gray-800 font-medium">
+                                    {title}
+                                  </div>
+                                  <div className="text-indigo-600 mt-1">
+                                    Open in archive →
+                                  </div>
                                 </div>
-                                <div className="text-gray-700">
-                                  {JSON.stringify(eventObj.data)
-                                    .substring(0, 100)
-                                    .replace(/[{}":]/g, "")}
-                                  ...
-                                </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         )}
                     </div>

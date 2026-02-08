@@ -13,5 +13,56 @@
     "query": "Failed policy: new policy",
     "response": "test\n\nFailure Reason: failed policy test",
     "timestamp": "1770472690435"
+  },
+  {
+    "query": "I want to find information about deck permits",
+    "response": "In Kingston, if you're looking to build a deck, you'll likely need a permit to ensure it complies with local building codes and safety standards. Here are some general steps you may need to follow:\n\n1. **Application Submission**: You'll need to submit an application to the Kingston Building Permit Office. This typically includes detailed plans of your proposed deck, including dimensions, materials, and proximity to property lines.\n\n2. **Zoning Requirements**: Make sure your deck complies with zoning bylaws, which might dictate size, height, and location restrictions.\n\n3. **Fee Payment**: There may be a fee associated with your permit application. Fees vary depending on the complexity and scope of your project.\n\n4. **Inspection**: Once your permit is approved and your deck is constructed, it will most likely require inspections at various stages to ensure all aspects align with the regulations.\n\nFor the most accurate and up-to-date information, you should contact the Kingston Building Services Division or check their official website. They can provide specific details regarding applications, fees, and any other necessary information you may need.",
+    "timestamp": "577180.0379914"
+  },
+  {
+    "query": "What do I need to build a shed?",
+    "response": "To build a shed in Kingston, you'll need to ensure that you're in compliance with local building regulations. Generally, you will require a building permit for constructing a shed, as it's considered a form of construction that needs to meet safety and code standards. According to Kingston city archives, you can apply for a building permit online through DASH or in person at 1211 John Counter Boulevard.\n\nIt's important to ensure your plans align with the Ontario Building Code, as there have been updates that came into effect starting January 1, 2025. This code update includes changes to design, construction, and safety standards, which will impact your project.\n\nAlso, be sure to check the Building Bylaw and Zoning Bylaw, as meeting building code compliance does not automatically mean zoning compliance. If you're considering additional residential units or changes to the structure that might classify it beyond a simple shed, further permits could be needed.\n\nIf you need specifics on how these regulations apply to your project, visiting the city's website or contacting their offices directly for guidance would be beneficial.",
+    "timestamp": "1770511925.2778704"
+  },
+  {
+    "query": "what do I need to build a shed?",
+    "response": "To build a shed in Kingston, you will need to determine if a building permit is required. The general rule is that you need a building permit for most construction activities to ensure safety and compliance with the building code. Specifically, permits are required if your project is located within a heritage district or if it involves certain building specifications that require review under the Ontario Building Code.\n\nHowever, the exact requirements for building a shed would depend on its size and location. For smaller sheds or outbuildings that comply with zoning bylaws, a permit might not be necessary, but you should confirm this since requirements can vary.\n\nAccording to the building permit guidelines, you can apply for a permit online through the DASH system or visit in person at 1211 John Counter Boulevard. For precise details on whether your shed requires a permit, it would be best to consult the City of Kingston's building department or examine the local zoning and building bylaws pertaining to sheds and similar structures.\n\nIf you need more specific guidance or help with your building plans, you might consider contacting Kingston's building department directly.",
+    "timestamp": "1770512224.235204",
+    "sources": []
+  },
+  {
+    "query": "What forms do I need to apply for a permit",
+    "response": "To apply for a building permit in Kingston, you will need to access and complete specific application forms. These forms can be submitted online via the DASH system or you can apply in person at the building department located at 1211 John Counter Boulevard.\n\nWhile the archive doesn't provide specific titles of forms required for the building permit application, the process typically involves providing details about the construction project, architectural plans, and any other relevant information necessary for compliance with the Ontario Building Code. If your construction involves electrical or gas work, specific inspections might also be necessary.\n\nFor precise form requirements, it's recommended to refer to the City of Kingston's official website or contact the city's building department directly. They can provide you with the specific forms and additional documentation required for your application.",
+    "timestamp": "1770512358.9100282",
+    "sources": []
+  },
+  {
+    "query": "What forms do I need to apply for a deck permit?",
+    "response": "To apply for a building permit for a deck in Kingston, you generally need to ensure you comply with the Ontario Building Code standards and submit your application through the appropriate channels. While the specific forms are not detailed in the provided context, you can apply for a building permit online through the DASH portal or in person at 1211 John Counter Boulevard. For more detailed information about the required documentation and forms, you may want to reach out directly to the building services at the City of Kingston or consult further resources on their website about building permits. \n\nThe building permit ensures that construction around Kingston is done safely and according to code [Source: building-permits].",
+    "timestamp": "1770512500.633517",
+    "sources": []
+  },
+  {
+    "query": "What forms do I need to apply for a deck permit?",
+    "response": "To apply for a building permit for a deck in Kingston, you'll need to comply with the Ontario Building Code and submit your application through the appropriate channels. Although the specific forms required aren't detailed in the archive, you can apply for a building permit either online via the DASH portal or in person at 1211 John Counter Boulevard. For more detailed information about the specific documentation and forms required, I recommend contacting Kingston's building services directly or checking more resources on their website concerning building permits. If you need more help, feel free to ask!",
+    "timestamp": "1770513414.0524168",
+    "sources": [
+      {
+        "category": "ai_responses",
+        "title": "(record)"
+      }
+    ]
+  },
+  {
+    "query": "What do I need for building a foundation?",
+    "response": "To build a foundation in Kingston, you will need to ensure you have a building permit as required by the Ontario Building Code. A building permit is necessary for all construction activities, including foundational work for residential, industrial, and commercial projects. This permit allows the city to ensure that your construction is safe and meets the appropriate codes [Source: building-permits].\n\nYou'll want to apply for your building permit either online through the DASH system or in person at 1211 John Counter Boulevard [Source: building-permits].\n\nAdditionally, you may require inspections for electrical installations or any gas equipment and appliances associated with the foundation if applicable. For these inspections, you would need to contact the Electrical Safety Authority or the appropriate gas inspection service [Source: building-permits].\n\nIf you need more details on specific requirements for foundation work or need assistance with your application, checking the Building Bylaw on the city's website or contacting the city's building services might be helpful next steps.",
+    "timestamp": "1770513458.4044573",
+    "sources": []
+  },
+  {
+    "query": "What forms do I need to build a shed bigger than 10x10",
+    "response": "To build a shed larger than 10x10 in Kingston, you will need to apply for a building permit. According to the building permit information from Kingston City Services, most construction activities, including significant structures like a shed over certain dimensions, require a building permit to ensure the construction is safe and complies with the Ontario Building Code.\n\nYou can apply for the permit online through the DASH system or in person at 1211 John Counter Boulevard. It's also helpful to review the Building Bylaw or any relevant updates from the 2024 Ontario Building Code to ensure you meet all requirements before submitting your permit application [Source: building-permits].\n\nIf you need assistance with the forms or more details on the specific documents required, visiting the city's website or contacting the building services department could provide additional guidance.",
+    "timestamp": "1770513491.8574004",
+    "sources": []
   }
 ]

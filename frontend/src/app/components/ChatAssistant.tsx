@@ -4,6 +4,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { encodeArchivePayload } from "../utils/archive";
 
 interface Message {
   role: "user" | "assistant";
@@ -15,6 +16,20 @@ interface Message {
 
 const STORAGE_KEY = "chatbot_messages";
 const ARCHIVE_KEY = "archive_records";
+
+/** Get a short display title for an archive record (links AI answer to the JSON data). */
+function getSourceTitle(data: Record<string, unknown>): string {
+  if (!data || typeof data !== "object") return "View record";
+  const title =
+    (data.heading as string) ||
+    (data.title as string) ||
+    (data.name as string) ||
+    (data.description as string);
+  if (title && typeof title === "string") return title.length > 60 ? title.slice(0, 60) + "…" : title;
+  const text = data.text as string;
+  if (text && typeof text === "string") return text.slice(0, 50).trim() + "…";
+  return "View record";
+}
 
 export default function ChatAssistant() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -53,7 +68,6 @@ export default function ChatAssistant() {
   }, [messages]);
 
   const handleResultClick = (item: any, category: string) => {
-    // Save to archive
     const archiveKey = `${category}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const record = {
       id: archiveKey,
@@ -61,14 +75,12 @@ export default function ChatAssistant() {
       data: item,
       timestamp: Date.now(),
     };
-    
     const archive = localStorage.getItem(ARCHIVE_KEY);
     const records = archive ? JSON.parse(archive) : [];
     records.push(record);
     localStorage.setItem(ARCHIVE_KEY, JSON.stringify(records));
-    
-    const encodedData = encodeURIComponent(JSON.stringify(item));
-    router.push(`/archive?data=${encodedData}&category=${category}`);
+    const d = encodeArchivePayload(typeof item === "object" && item !== null ? item : { data: item });
+    router.push(`/archive?d=${d}&category=${encodeURIComponent(category)}`);
   };
 
   const sendMessage = async (e: React.FormEvent) => {
@@ -93,11 +105,13 @@ export default function ChatAssistant() {
         searchQuery: input, // Store the original search query
       };
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { details?: string; error?: string } } };
+      const details = err.response?.data?.details || err.response?.data?.error || "Check the backend console for details.";
       console.error("Error sending message:", error);
       const errorMessage: Message = {
         role: "assistant",
-        content: "Sorry, I encountered an error.",
+        content: `Sorry, something went wrong: ${details}`,
         source: "error",
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -109,12 +123,6 @@ export default function ChatAssistant() {
   if (!hydrated) {
     return <div className="text-center text-gray-500">Loading...</div>;
   }
-
-  // Extract main keyword from search query for natural text
-  const getMainKeyword = (query: string): string => {
-    const words = query.split(" ").filter((w) => w.length > 2);
-    return words[0] || query;
-  };
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 flex flex-col w-full max-w-4xl h-[calc(100vh-2rem)] sm:h-[calc(100vh-3rem)]">
@@ -130,59 +138,55 @@ export default function ChatAssistant() {
 
         {messages.map((msg, idx) => (
           <div key={idx}>
-            {/* Only show message text if it's from user or if no events are present */}
-            {!(msg.role === "assistant" && msg.source === "local" && msg.events && msg.events.length > 0) && (
+            {/* Always show message content (AI response or user message) */}
+            <div
+              className={`flex ${
+                msg.role === "user" ? "justify-end" : "justify-start"
+              }`}
+            >
               <div
-                className={`flex ${
-                  msg.role === "user" ? "justify-end" : "justify-start"
+                className={`max-w-xs sm:max-w-md px-4 py-2 rounded-lg ${
+                  msg.role === "user"
+                    ? "bg-indigo-600 text-white"
+                    : "bg-gray-200 text-gray-900"
                 }`}
               >
-                <div
-                  className={`max-w-xs sm:max-w-md px-4 py-2 rounded-lg ${
-                    msg.role === "user"
-                      ? "bg-indigo-600 text-white"
-                      : "bg-gray-200 text-gray-900"
-                  }`}
-                >
-                  <p className="text-xs sm:text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+                <p className="text-xs sm:text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+              </div>
+            </div>
+
+            {/* Card context: archive records used for this answer (same as home page — click to open) */}
+            {msg.role === "assistant" && msg.events && msg.events.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-indigo-200 space-y-3">
+                <p className="text-xs sm:text-sm font-semibold text-indigo-600">
+                  Archive data used for this answer ({msg.events.length} record{msg.events.length !== 1 ? "s" : ""} — click to view):
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {msg.events.map((eventObj, eventIdx) => {
+                    const category = eventObj.category || "data";
+                    const data = eventObj.data || {};
+                    const title = getSourceTitle(data);
+                    return (
+                      <button
+                        key={eventIdx}
+                        type="button"
+                        onClick={() => handleResultClick(data, category)}
+                        className="text-left bg-white border border-indigo-200 rounded-lg p-3 sm:p-4 cursor-pointer hover:shadow-md hover:border-indigo-400 transition focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      >
+                        <div className="text-xs font-semibold text-indigo-600 mb-1 uppercase">
+                          {(category as string).replace(/_/g, " ")}
+                        </div>
+                        <div className="text-xs sm:text-sm text-gray-800 font-medium line-clamp-2 mb-1">
+                          {title}
+                        </div>
+                        <div className="text-xs text-indigo-600 mt-2 font-semibold">
+                          Open in archive →
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-            )}
-
-            {/* Display results as boxes if they exist */}
-            {msg.role === "assistant" && msg.events && msg.events.length > 0 && (
-              <>
-                {msg.source === "local" && msg.searchQuery && (
-                  <p className="text-xs sm:text-sm text-gray-700 mb-3 font-medium">
-                    I found <span className="font-bold text-indigo-600">{msg.events.length} result{msg.events.length !== 1 ? "s" : ""}</span> regarding <span className="font-semibold text-indigo-600">&apos;{msg.searchQuery}&apos;</span>:
-                  </p>
-                )}
-                <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {msg.events.map((eventObj, eventIdx) => (
-                    <div
-                      key={eventIdx}
-                      onClick={() => {
-                        const category = eventObj.category || "data";
-                        handleResultClick(eventObj.data, category);
-                      }}
-                      className="bg-indigo-50 border-2 border-indigo-200 rounded-lg p-3 sm:p-4 cursor-pointer hover:shadow-md hover:border-indigo-400 transition"
-                    >
-                      <div className="text-xs font-semibold text-indigo-600 mb-2 uppercase">
-                        {(eventObj.category || "Data").replace(/_/g, " ")}
-                      </div>
-                      <div className="text-xs sm:text-sm text-gray-700 line-clamp-4">
-                        {JSON.stringify(eventObj.data)
-                          .substring(0, 150)
-                          .replace(/[{}":]/g, "")}
-                        ...
-                      </div>
-                      <div className="text-xs text-indigo-600 mt-2 font-semibold">
-                        Click to view details →
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
             )}
           </div>
         ))}

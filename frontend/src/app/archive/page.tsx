@@ -2,10 +2,46 @@
 "use client";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { decodeArchivePayload } from "../utils/archive";
 
 interface ArchiveItem {
   category: string;
   data: Record<string, any>;
+}
+
+function parseArchiveData(
+  dataParam: string | null,
+  base64Param: string | null,
+  category: string | null
+): ArchiveItem | null {
+  if (!category) return null;
+
+  if (base64Param) {
+    try {
+      const decoded = decodeArchivePayload(base64Param) as Record<string, any>;
+      return { category, data: decoded };
+    } catch (e) {
+      console.error("Error decoding base64 archive data:", e);
+      return null;
+    }
+  }
+
+  if (dataParam) {
+    try {
+      const decoded = JSON.parse(decodeURIComponent(dataParam)) as Record<string, any>;
+      return { category, data: decoded };
+    } catch {
+      try {
+        const decoded = decodeArchivePayload(dataParam) as Record<string, any>;
+        return { category, data: decoded };
+      } catch (e) {
+        console.error("Error parsing archive data:", e);
+        return null;
+      }
+    }
+  }
+
+  return null;
 }
 
 export default function ArchivePage() {
@@ -15,29 +51,15 @@ export default function ArchivePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const encodedData = searchParams.get("data");
+    const dataParam = searchParams.get("data");
+    const base64Param = searchParams.get("d");
     const category = searchParams.get("category");
 
-    if (encodedData && category) {
-      try {
-        const decodedData = JSON.parse(decodeURIComponent(encodedData));
-        setTimeout(() => {
-          setItem({ category, data: decodedData });
-          setLoading(false);
-        }, 0);
-      } catch (error) {
-        console.error("Error parsing data:", error, "Raw data:", encodedData);
-        setTimeout(() => {
-          setItem(null);
-          setLoading(false);
-        }, 0);
-      }
-    } else {
-      setTimeout(() => {
-        setItem(null);
-        setLoading(false);
-      }, 0);
-    }
+    const parsed = parseArchiveData(dataParam, base64Param, category);
+    setTimeout(() => {
+      setItem(parsed);
+      setLoading(false);
+    }, 0);
   }, [searchParams]);
 
   if (loading) {
