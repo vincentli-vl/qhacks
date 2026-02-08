@@ -104,7 +104,7 @@ export default function Help() {
                   {faq.question}
                 </h3>
                 <svg
-                  className={`w-5 h-5 text-indigo-600 flex-shrink-0 transition-transform ${
+                  className={`w-5 h-5 text-[#22529F] flex-shrink-0 transition-transform ${
                     expandedId === faq.id ? "rotate-180" : ""
                   }`}
                   fill="none"
@@ -139,7 +139,7 @@ export default function Help() {
             If you have additional questions or need further assistance, please
             reach out to our support team.
           </p>
-          <button className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium text-sm sm:text-base">
+          <button className="px-6 py-2 bg-[#22529F] text-white rounded-lg hover:bg-[#00377c] transition font-medium text-sm sm:text-base">
             Contact Support
           </button>
         </div>

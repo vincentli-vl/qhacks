@@ -36,7 +36,7 @@ export default function Profile() {
         <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
           {/* Avatar Section */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-8 pb-8 border-b border-gray-200">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-indigo-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-[#22529F] to-[#00377c] rounded-full flex items-center justify-center flex-shrink-0">
               <svg
                 className="w-10 h-10 sm:w-12 sm:h-12 text-white"
                 fill="currentColor"
@@ -88,7 +88,7 @@ export default function Profile() {
                     setIsEditing(true);
                     setFormData(profile);
                   }}
-                  className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium text-sm sm:text-base"
+                  className="mt-6 px-6 py-2 bg--[#22529F] text-white rounded-lg hover:bg-[#00377c] transition font-medium text-sm sm:text-base"
                 >
                   Edit Profile
                 </button>
@@ -104,7 +104,7 @@ export default function Profile() {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22529F] text-sm sm:text-base"
                   />
                 </div>
 
@@ -117,7 +117,7 @@ export default function Profile() {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22529F] text-sm sm:text-base"
                   />
                 </div>
 
@@ -130,14 +130,14 @@ export default function Profile() {
                     name="organization"
                     value={formData.organization}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22529F] text-sm sm:text-base"
                   />
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 mt-6">
                   <button
                     onClick={handleSave}
-                    className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium text-sm sm:text-base"
+                    className="px-6 py-2 bg-[#22529F] text-white rounded-lg hover:bg-[#00377c] transition font-medium text-sm sm:text-base"
                   >
                     Save Changes
                   </button>

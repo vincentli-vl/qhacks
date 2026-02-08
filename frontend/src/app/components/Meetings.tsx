@@ -188,7 +188,7 @@ export default function Meetings() {
   if (isProcessing) {
     return (
       <div className="text-center py-8">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#22529F] mb-4"></div>
         <p className="text-gray-600">Processing audio and generating transcript...</p>
         <p className="text-sm text-gray-500 mt-2">This may take a few minutes</p>
       </div>
@@ -198,7 +198,7 @@ export default function Meetings() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h2 className="text-2xl font-serif text-gray-900 underline">
+        <h2 className="text-2xl text-gray-900 underline">
           Recent Meetings
         </h2>
         <div className="flex gap-2">
@@ -219,7 +219,7 @@ export default function Meetings() {
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition whitespace-nowrap ${
               isRecording
                 ? "bg-gray-400 text-white cursor-not-allowed"
-                : "bg-indigo-600 text-white hover:bg-indigo-700"
+                : "bg-[#22529F] text-white hover:bg-[#00377c]"
             }`}
           >
             <svg
@@ -258,7 +258,7 @@ export default function Meetings() {
                       href={meeting.meeting_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-indigo-600 hover:text-indigo-800 text-sm font-medium inline-block"
+                      className="text-[#22529F] hover:text-[#00377c] text-sm font-medium inline-block"
                     >
                       View Full Meeting Page →
                     </a>
@@ -277,7 +277,7 @@ export default function Meetings() {
                         : `${meeting.meeting}-${meeting.date}`,
                     )
                   }
-                  className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm"
+                  className="ml-4 px-4 py-2 bg-[#22529F] text-white rounded-lg hover:bg-[#00377c] transition text-sm"
                 >
                   {selectedMeeting === `${meeting.meeting}-${meeting.date}`
                     ? "Hide Details"
@@ -292,7 +292,7 @@ export default function Meetings() {
                   {meeting.audio_file && (
                     <div className="mb-4 p-4 bg-indigo-50 rounded-lg">
                       <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                        <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 text-[#22529F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
                         </svg>
                         Meeting Recording
@@ -329,7 +329,7 @@ export default function Meetings() {
                               return newSet;
                             });
                           }}
-                          className="text-sm text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1 px-3 py-1 rounded hover:bg-indigo-50 transition"
+                          className="text-sm text-[#22529F] hover:text-[#00377c] font-medium flex items-center gap-1 px-3 py-1 rounded hover:bg-indigo-50 transition"
                         >
                           {expandedTranscripts.has(`${meeting.meeting}-${meeting.date}`) ? (
                             <>
@@ -356,10 +356,10 @@ export default function Meetings() {
                         {meeting.transcript.map((segment, segIdx) => (
                           <div
                             key={segIdx}
-                            className="bg-white p-3 rounded border-l-4 border-indigo-500 hover:shadow-sm transition"
+                            className="bg-white p-3 rounded border-l-4 border-[#22529F] hover:shadow-sm transition"
                           >
                             <div className="flex items-center justify-between mb-1">
-                              <span className="font-semibold text-indigo-600">
+                              <span className="font-semibold text-[#22529F]">
                                 Speaker {segment.speaker}
                               </span>
                               <span className="text-xs text-gray-500">

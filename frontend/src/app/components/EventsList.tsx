@@ -95,13 +95,13 @@ export default function EventsList() {
             {displayedEvents.map((event, idx) => (
               <div
                 key={idx}
-                className="border-l-4 border-indigo-500 pl-4 py-3 hover:bg-gray-50 rounded transition"
+                className="border-l-4 border-[#22529F] pl-4 py-3 hover:bg-gray-50 rounded transition"
               >
                 <a
                   href={event.meeting_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-gray-900 hover:text-indigo-600"
+                  className="font-semibold text-gray-900 hover:text-[#22529F]"
                 >
                   {event.meeting}
                 </a>
@@ -112,7 +112,7 @@ export default function EventsList() {
                       href={event.documents["Agenda HTML"]}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                      className="text-[#22529F] hover:text-[#00377c] text-sm font-medium"
                     >
                       Agenda HTML
                     </a>
@@ -122,7 +122,7 @@ export default function EventsList() {
                       href={event.documents["Agenda PDF"]}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                      className="text-[#22529F] hover:text-[#00377c] text-sm font-medium"
                     >
                       Agenda PDF
                     </a>
@@ -132,7 +132,7 @@ export default function EventsList() {
                       href={event.documents["Minutes HTML"]}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                      className="text-[#22529F] hover:text-[#00377c] text-sm font-medium"
                     >
                       Minutes HTML
                     </a>
@@ -142,7 +142,7 @@ export default function EventsList() {
                       href={event.documents["Minutes PDF"]}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                      className="text-[#22529F] hover:text-[#00377c] text-sm font-medium"
                     >
                       Minutes PDF
                     </a>

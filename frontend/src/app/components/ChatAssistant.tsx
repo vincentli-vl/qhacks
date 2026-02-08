@@ -126,13 +126,13 @@ export default function ChatAssistant() {
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 flex flex-col w-full max-w-4xl h-[calc(100vh-2rem)] sm:h-[calc(100vh-3rem)]">
-      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">AI Assistant</h2>
+      <h2 className="text-xl sm:text-3xl font-bold text-center justify-center items-center text-gray-900 mb-2">Ask the Past</h2>
 
       {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto mb-4 space-y-4">
+      <div className="flex-1 overflow-y-auto mb-4 space-y-2">
         {messages.length === 0 && (
           <p className="text-gray-500 text-center text-xs sm:text-sm">
-            Start a conversation about Kingston city services and events
+            Artificial Intelligence Powered by the Kingston Archives
           </p>
         )}
 
@@ -147,7 +147,7 @@ export default function ChatAssistant() {
               <div
                 className={`max-w-xs sm:max-w-md px-4 py-2 rounded-lg ${
                   msg.role === "user"
-                    ? "bg-indigo-600 text-white"
+                    ? "bg-[#22529F] text-white"
                     : "bg-gray-200 text-gray-900"
                 }`}
               >
@@ -158,7 +158,7 @@ export default function ChatAssistant() {
             {/* Card context: archive records used for this answer (same as home page — click to open) */}
             {msg.role === "assistant" && msg.events && msg.events.length > 0 && (
               <div className="mt-4 pt-4 border-t border-indigo-200 space-y-3">
-                <p className="text-xs sm:text-sm font-semibold text-indigo-600">
+                <p className="text-xs sm:text-sm font-semibold text-[#22529F]">
                   Archive data used for this answer ({msg.events.length} record{msg.events.length !== 1 ? "s" : ""} — click to view):
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -171,15 +171,15 @@ export default function ChatAssistant() {
                         key={eventIdx}
                         type="button"
                         onClick={() => handleResultClick(data, category)}
-                        className="text-left bg-white border border-indigo-200 rounded-lg p-3 sm:p-4 cursor-pointer hover:shadow-md hover:border-indigo-400 transition focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="text-left bg-white border border-indigo-200 rounded-lg p-3 sm:p-4 cursor-pointer hover:shadow-md hover:border-[#22529F] transition focus:outline-none focus:ring-2 focus:ring-[#00377c]"
                       >
-                        <div className="text-xs font-semibold text-indigo-600 mb-1 uppercase">
+                        <div className="text-xs font-semibold text-[#22529F] mb-1 uppercase">
                           {(category as string).replace(/_/g, " ")}
                         </div>
                         <div className="text-xs sm:text-sm text-gray-800 font-medium line-clamp-2 mb-1">
                           {title}
                         </div>
-                        <div className="text-xs text-indigo-600 mt-2 font-semibold">
+                        <div className="text-xs text-[#22529F] mt-2 font-semibold">
                           Open in archive →
                         </div>
                       </button>
@@ -203,13 +203,13 @@ export default function ChatAssistant() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask about events, permits..."
-          className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black text-sm sm:text-base"
+          className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22529F] text-black text-sm sm:text-base"
           disabled={loading}
         />
         <button
           type="submit"
           disabled={loading}
-          className="px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 transition text-sm sm:text-base font-medium"
+          className="px-3 sm:px-4 py-2 bg-[#22529F] text-white rounded-lg hover:bg-[#00377c] cursor-pointer disabled:bg-gray-400 transition text-sm sm:text-base font-medium"
         >
           Send
         </button>

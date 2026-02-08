@@ -187,13 +187,13 @@ export default function PendingRequests() {
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <button
             onClick={() => setShowPolicyForm(!showPolicyForm)}
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium text-sm sm:text-base"
+            className="px-6 py-3 bg-[#22529F] text-white rounded-lg hover:bg-[#00377c] transition font-medium text-sm sm:text-base"
           >
             + Add Policy
           </button>
           <button
             onClick={() => setShowPermitForm(!showPermitForm)}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm sm:text-base"
+            className="px-6 py-3 bg-[#333FFc] text-white rounded-lg hover:bg-[#000FFC] transition font-medium text-sm sm:text-base"
           >
             + Add Permit
           </button>
@@ -209,20 +209,20 @@ export default function PendingRequests() {
                 placeholder="Policy Title *"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black text-sm sm:text-base"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22529F] text-black text-sm sm:text-base"
               />
               <textarea
                 placeholder="Policy Description *"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 h-24 text-black text-sm sm:text-base"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22529F] h-24 text-black text-sm sm:text-base"
               />
               <input
                 type="text"
                 placeholder="Submitted By *"
                 value={formData.submittedBy}
                 onChange={(e) => setFormData({ ...formData, submittedBy: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black text-sm sm:text-base"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22529F] text-black text-sm sm:text-base"
               />
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -235,7 +235,7 @@ export default function PendingRequests() {
                       placeholder={`Detail ${idx + 1}`}
                       value={detail}
                       onChange={(e) => handleDetailChange(idx, e.target.value)}
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black text-sm sm:text-base"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22529F] text-black text-sm sm:text-base"
                     />
                     {formData.details.length > 1 && (
                       <button
@@ -249,7 +249,7 @@ export default function PendingRequests() {
                 ))}
                 <button
                   onClick={addDetailField}
-                  className="text-indigo-600 hover:text-indigo-700 font-medium text-xs sm:text-sm"
+                  className="text-[#22529F] hover:text-[#00377c] font-medium text-xs sm:text-sm"
                 >
                   + Add Detail
                 </button>
@@ -257,7 +257,7 @@ export default function PendingRequests() {
               <div className="flex gap-3">
                 <button
                   onClick={() => handleSubmitRequest("policy")}
-                  className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+                  className="px-6 py-2 bg-[#22529F] text-white rounded-lg hover:bg-[#00377c] transition font-medium"
                 >
                   Submit Policy
                 </button>
@@ -462,7 +462,7 @@ function RequestCard({ request, onDecision }: RequestCardProps) {
           <ul className="space-y-1">
             {request.details.map((detail, idx) => (
               <li key={idx} className="text-sm text-gray-700 flex items-start gap-2">
-                <span className="text-indigo-600 mt-1">•</span>
+                <span className="text-[#22529F] mt-1">•</span>
                 <span>{detail}</span>
               </li>
             ))}

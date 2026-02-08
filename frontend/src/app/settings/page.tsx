@@ -49,7 +49,7 @@ export default function Settings() {
                 <button
                   onClick={() => handleToggle("notifications")}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition flex-shrink-0 ${
-                    settings.notifications ? "bg-indigo-600" : "bg-gray-300"
+                    settings.notifications ? "bg-[#22529F]" : "bg-gray-300"
                   }`}
                 >
                   <span
@@ -72,7 +72,7 @@ export default function Settings() {
                 <button
                   onClick={() => handleToggle("emailDigest")}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition flex-shrink-0 ${
-                    settings.emailDigest ? "bg-indigo-600" : "bg-gray-300"
+                    settings.emailDigest ? "bg-[#22529F]" : "bg-gray-300"
                   }`}
                 >
                   <span
@@ -101,7 +101,7 @@ export default function Settings() {
               <button
                 onClick={() => handleToggle("darkMode")}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition flex-shrink-0 ${
-                  settings.darkMode ? "bg-indigo-600" : "bg-gray-300"
+                  settings.darkMode ? "bg-[#22529F]" : "bg-gray-300"
                 }`}
               >
                 <span
@@ -125,7 +125,7 @@ export default function Settings() {
                 name="dataRetention"
                 value={settings.dataRetention}
                 onChange={handleSelectChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22529F] text-sm sm:text-base"
               >
                 <option value="30days">30 days</option>
                 <option value="90days">90 days</option>
@@ -150,7 +150,7 @@ export default function Settings() {
 
           {/* Save Notice */}
           <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mt-8">
-            <p className="text-xs sm:text-sm text-indigo-800">
+            <p className="text-xs sm:text-sm text-[#00377c]">
               ✓ Your settings are saved automatically
             </p>
           </div>

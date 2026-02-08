@@ -44,7 +44,7 @@ export default function Home() {
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [allData, setAllData] = useState<AllData>({});
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"chat" | "data">("chat");
+  const [activeTab, setActiveTab] = useState<"chat" | "data">("data");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchChatQuery, setSearchChatQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -135,9 +135,31 @@ export default function Home() {
       {/* Tabs */}
       <div className="flex gap-4 mb-6 border-b border-gray-200 overflow-x-auto">
         <button
+          onClick={() => setActiveTab("data")}
+          className={`flex items-center gap-2 px-4 py-3 font-medium transition whitespace-nowrap ${activeTab === "data"
+              ? "border-b-2 border-[#22529F] text-[#22529F]"
+              : "text-gray-600 hover:text-gray-900"
+            }`}
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4m0 0V5c0-2.21-3.582-4-8-4S4 2.79 4 5v2m16 0a2 2 0 11-4 0 2 2 0 014 0z"
+            />
+          </svg>
+          All Data ({Object.keys(allData).length})
+        </button>
+        <button
           onClick={() => setActiveTab("chat")}
           className={`flex items-center gap-2 px-4 py-3 font-medium transition whitespace-nowrap ${activeTab === "chat"
-              ? "border-b-2 border-indigo-600 text-indigo-600"
+              ? "border-b-2 border-[#22529F] text-[#22529F]"
               : "text-gray-600 hover:text-gray-900"
             }`}
         >
@@ -157,29 +179,97 @@ export default function Home() {
           Chat History (
           {chatHistory.filter((msg) => msg.role === "user").length})
         </button>
-        <button
-          onClick={() => setActiveTab("data")}
-          className={`flex items-center gap-2 px-4 py-3 font-medium transition whitespace-nowrap ${activeTab === "data"
-              ? "border-b-2 border-indigo-600 text-indigo-600"
-              : "text-gray-600 hover:text-gray-900"
-            }`}
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4m0 0V5c0-2.21-3.582-4-8-4S4 2.79 4 5v2m16 0a2 2 0 11-4 0 2 2 0 014 0z"
-            />
-          </svg>
-          All Data ({Object.keys(allData).length})
-        </button>
       </div>
+
+      {/* All Data Tab */}
+      {activeTab === "data" && (
+        <div className="space-y-4">
+          {Object.keys(allData).length === 0 ? (
+            <p className="text-gray-500 text-center py-8">No data available</p>
+          ) : (
+            <>
+              <div className="space-y-3 mb-6">
+                <input
+                  type="text"
+                  placeholder="Search data..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22529F] text-black"
+                />
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setSelectedCategory(null)}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition ${selectedCategory === null
+                        ? "bg-[#22529F] text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      }`}
+                  >
+                    All
+                  </button>
+                  {Object.keys(allData).map((category) => (
+                    <button
+                      key={category}
+                      onClick={() => setSelectedCategory(category)}
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition ${selectedCategory === category
+                          ? "bg-[#22529F] text-white"
+                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        }`}
+                    >
+                      {category.replace(/_/g, " ")}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {(() => {
+                  const itemsToShow: Array<{ item: any; category: string }> =
+                    [];
+                  const categoriesToCheck = selectedCategory
+                    ? [selectedCategory]
+                    : Object.keys(allData);
+
+                  categoriesToCheck.forEach((cat) => {
+                    const items = allData[cat] || [];
+                    items.forEach((item) => {
+                      const itemStr = JSON.stringify(item).toLowerCase();
+                      if (
+                        searchQuery === "" ||
+                        itemStr.includes(searchQuery.toLowerCase())
+                      ) {
+                        itemsToShow.push({ item, category: cat });
+                      }
+                    });
+                  });
+
+                  return itemsToShow.length === 0 ? (
+                    <p className="text-gray-500 col-span-full text-center py-8">
+                      No results found
+                    </p>
+                  ) : (
+                    itemsToShow.map((obj, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => handleDataClick(obj.item, obj.category)}
+                        className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition cursor-pointer"
+                      >
+                        <div className="text-xs font-semibold text-[#22529F] uppercase mb-2">
+                          {obj.category.replace(/_/g, " ")}
+                        </div>
+                        <p className="text-sm text-gray-700 line-clamp-3">
+                          {JSON.stringify(obj.item)
+                            .substring(0, 150)
+                            .replace(/[{}\"]/g, "")}
+                          ...
+                        </p>
+                      </div>
+                    ))
+                  );
+                })()}
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
       {/* Chat History Tab */}
       {activeTab === "chat" && (
@@ -196,7 +286,7 @@ export default function Home() {
                   placeholder="Search chat history..."
                   value={searchChatQuery}
                   onChange={(e) => setSearchChatQuery(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22529F] text-black"
                 />
               </div>
               <div className="flex justify-between items-center mb-4">
@@ -257,7 +347,7 @@ export default function Home() {
                           : `${msg.content.substring(0, 100)}${msg.content.length > 100 ? "..." : ""}`}
                       </p>
                       {msg.events && msg.events.length > 0 && (
-                        <div className="mt-2 text-xs text-indigo-600 font-semibold">
+                        <div className="mt-2 text-xs text-[#22529F] font-semibold">
                           Linked to {msg.events.length} archive record{msg.events.length !== 1 ? "s" : ""}
                         </div>
                       )}
@@ -267,7 +357,7 @@ export default function Home() {
                         msg.events &&
                         msg.events.length > 0 && (
                           <div className="mt-4 pt-4 border-t border-indigo-200 space-y-3">
-                            <p className="text-xs font-semibold text-indigo-600">
+                            <p className="text-xs font-semibold text-[#22529F]">
                               Archive data used for this answer:
                             </p>
                             {msg.events.map((eventObj, eventIdx) => {
@@ -291,7 +381,7 @@ export default function Home() {
                                   }}
                                   className="bg-white border border-indigo-200 rounded p-2 cursor-pointer hover:shadow-sm transition text-xs"
                                 >
-                                  <div className="font-semibold text-indigo-600 mb-1">
+                                  <div className="font-semibold text-[#22529F] mb-1">
                                     {(category as string).replace(/_/g, " ")}
                                   </div>
                                   <div className="text-gray-800 font-medium">
@@ -308,96 +398,6 @@ export default function Home() {
                     </div>
                   );
                 })}
-              </div>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* All Data Tab */}
-      {activeTab === "data" && (
-        <div className="space-y-4">
-          {Object.keys(allData).length === 0 ? (
-            <p className="text-gray-500 text-center py-8">No data available</p>
-          ) : (
-            <>
-              <div className="space-y-3 mb-6">
-                <input
-                  type="text"
-                  placeholder="Search data..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black"
-                />
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => setSelectedCategory(null)}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition ${selectedCategory === null
-                        ? "bg-indigo-600 text-white"
-                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                      }`}
-                  >
-                    All
-                  </button>
-                  {Object.keys(allData).map((category) => (
-                    <button
-                      key={category}
-                      onClick={() => setSelectedCategory(category)}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition ${selectedCategory === category
-                          ? "bg-indigo-600 text-white"
-                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                        }`}
-                    >
-                      {category.replace(/_/g, " ")}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(() => {
-                  const itemsToShow: Array<{ item: any; category: string }> =
-                    [];
-                  const categoriesToCheck = selectedCategory
-                    ? [selectedCategory]
-                    : Object.keys(allData);
-
-                  categoriesToCheck.forEach((cat) => {
-                    const items = allData[cat] || [];
-                    items.forEach((item) => {
-                      const itemStr = JSON.stringify(item).toLowerCase();
-                      if (
-                        searchQuery === "" ||
-                        itemStr.includes(searchQuery.toLowerCase())
-                      ) {
-                        itemsToShow.push({ item, category: cat });
-                      }
-                    });
-                  });
-
-                  return itemsToShow.length === 0 ? (
-                    <p className="text-gray-500 col-span-full text-center py-8">
-                      No results found
-                    </p>
-                  ) : (
-                    itemsToShow.map((obj, idx) => (
-                      <div
-                        key={idx}
-                        onClick={() => handleDataClick(obj.item, obj.category)}
-                        className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition cursor-pointer"
-                      >
-                        <div className="text-xs font-semibold text-indigo-600 uppercase mb-2">
-                          {obj.category.replace(/_/g, " ")}
-                        </div>
-                        <p className="text-sm text-gray-700 line-clamp-3">
-                          {JSON.stringify(obj.item)
-                            .substring(0, 150)
-                            .replace(/[{}\"]/g, "")}
-                          ...
-                        </p>
-                      </div>
-                    ))
-                  );
-                })()}
               </div>
             </>
           )}

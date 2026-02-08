@@ -254,7 +254,7 @@ export default function Timeline() {
               placeholder="Search timeline..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black text-sm sm:text-base"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-bg-[#22529F] text-black text-sm sm:text-base"
             />
           </div>
 
@@ -263,7 +263,7 @@ export default function Timeline() {
               onClick={() => setStatusFilter("all")}
               className={`px-3 sm:px-4 py-2 rounded-full font-medium transition text-xs sm:text-sm ${
                 statusFilter === "all"
-                  ? "bg-indigo-600 text-white"
+                  ? "bg-[#22529F] text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
@@ -316,14 +316,14 @@ export default function Timeline() {
         ) : (
           <div className="relative">
             {/* Central line - hidden on mobile */}
-            <div className="hidden sm:block absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-400 to-indigo-600"></div>
+            <div className="hidden sm:block absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-[#22529F] to-[#00377c]"></div>
 
             {/* Timeline events */}
             <div className="space-y-6">
               {displayedEvents.map((event) => (
                 <div key={event.id} className="relative sm:pl-24 pl-6">
                   {/* Timeline dot - repositioned for mobile */}
-                  <div className="absolute left-0 w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full border-4 border-indigo-600 flex items-center justify-center text-lg sm:text-2xl shadow-md">
+                  <div className="absolute left-0 w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full border-4 border-[#22529F] flex items-center justify-center text-lg sm:text-2xl shadow-md">
                     {getTypeIcon(event.type)}
                   </div>
 
@@ -355,7 +355,7 @@ export default function Timeline() {
                       <ul className="space-y-2">
                         {event.details.map((detail, idx) => (
                           <li key={idx} className="flex items-start gap-2 text-gray-700 text-xs sm:text-sm">
-                            <span className="text-indigo-600 mt-1 flex-shrink-0">•</span>
+                            <span className="text-[#22529F] mt-1 flex-shrink-0">•</span>
                             <span>{detail}</span>
                           </li>
                         ))}
@@ -410,7 +410,7 @@ export default function Timeline() {
       {showBackToTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 z-50 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 transition-all duration-300 hover:scale-110"
+          className="fixed bottom-8 right-8 z-50 bg-[#22529F] text-white p-4 rounded-full shadow-lg hover:bg-[#00377c] transition-all duration-300 hover:scale-110"
           aria-label="Back to top"
         >
           <svg

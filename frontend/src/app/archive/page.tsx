@@ -71,7 +71,7 @@ export default function ArchivePage() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-6 md:p-8">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 mb-4"
+          className="flex items-center gap-2 text-[#22529F] hover:text-[#00377c] mb-4 cursor-pointer"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -98,7 +98,7 @@ export default function ArchivePage() {
       <div className="max-w-4xl mx-auto">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 mb-6"
+          className="flex items-center gap-2 text-[#22529F] cursor-pointer hover:text-[#00377c] mb-6"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -145,7 +145,7 @@ export default function ArchivePage() {
                     href={value}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-indigo-600 hover:text-indigo-800 hover:underline break-all"
+                    className="text-[#22529F] hover:text-[#00377c] hover:underline break-all"
                   >
                     {value}
                   </a>
