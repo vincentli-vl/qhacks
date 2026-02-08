@@ -125,7 +125,7 @@ export default function Settings() {
                 name="dataRetention"
                 value={settings.dataRetention}
                 onChange={handleSelectChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22529F] text-sm sm:text-base"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22529F] text-sm sm:text-base text-black"
               >
                 <option value="30days">30 days</option>
                 <option value="90days">90 days</option>

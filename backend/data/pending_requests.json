@@ -34,5 +34,15 @@
     "details": [],
     "status": "passed",
     "decision": "passed"
+  },
+  {
+    "id": "policy_1770550054820",
+    "type": "policy",
+    "title": "new policy",
+    "description": "desc",
+    "submittedDate": "2/8/2026",
+    "submittedBy": "test user",
+    "details": [],
+    "status": "pending"
   }
 ]
