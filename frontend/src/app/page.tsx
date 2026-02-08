@@ -122,14 +122,15 @@ export default function Home() {
 
   return (
     <div className="p-4 sm:p-6 md:p-8 max-w-6xl mx-auto">
-      <div className="w-88 ml-90 mb-15 mt-8">
-      <Image
-              src="/images/Kingston_Archives_Whole_Logo.png"
-              alt="logo"
-              width={200}
-              height={200}
-              className="w-full"
-            />
+      <div className="w-full flex justify-center items-center mb-8 mt-8">
+        <Image
+          src="/images/Kingston_Archives_Whole_Logo.png"
+          alt="logo"
+          width={200}
+          height={200}
+          className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto"
+          priority
+        />
       </div>
 
       {/* Tabs */}
