@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { encodeArchivePayload } from "./utils/archive";
+import Image from "next/image";
 
 interface Message {
   role: "user" | "assistant";
@@ -121,6 +122,15 @@ export default function Home() {
 
   return (
     <div className="p-4 sm:p-6 md:p-8 max-w-6xl mx-auto">
+      <div className="w-88 ml-90 mb-15 mt-8">
+      <Image
+              src="/images/Kingston_Archives_Whole_Logo.png"
+              alt="logo"
+              width={200}
+              height={200}
+              className="w-full"
+            />
+      </div>
       <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-8">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
           Kingston Records Hub
@@ -134,11 +144,10 @@ export default function Home() {
       <div className="flex gap-4 mb-6 border-b border-gray-200 overflow-x-auto">
         <button
           onClick={() => setActiveTab("chat")}
-          className={`flex items-center gap-2 px-4 py-3 font-medium transition whitespace-nowrap ${
-            activeTab === "chat"
+          className={`flex items-center gap-2 px-4 py-3 font-medium transition whitespace-nowrap ${activeTab === "chat"
               ? "border-b-2 border-indigo-600 text-indigo-600"
               : "text-gray-600 hover:text-gray-900"
-          }`}
+            }`}
         >
           <svg
             className="w-5 h-5"
@@ -158,11 +167,10 @@ export default function Home() {
         </button>
         <button
           onClick={() => setActiveTab("data")}
-          className={`flex items-center gap-2 px-4 py-3 font-medium transition whitespace-nowrap ${
-            activeTab === "data"
+          className={`flex items-center gap-2 px-4 py-3 font-medium transition whitespace-nowrap ${activeTab === "data"
               ? "border-b-2 border-indigo-600 text-indigo-600"
               : "text-gray-600 hover:text-gray-900"
-          }`}
+            }`}
         >
           <svg
             className="w-5 h-5"
@@ -243,11 +251,10 @@ export default function Home() {
                           expandedChatIndex === idx ? null : idx,
                         )
                       }
-                      className={`p-4 rounded-lg cursor-pointer transition ${
-                        msg.role === "user"
+                      className={`p-4 rounded-lg cursor-pointer transition ${msg.role === "user"
                           ? "bg-indigo-100 ml-auto max-w-lg hover:bg-indigo-200"
                           : "bg-gray-100 max-w-lg hover:bg-gray-200"
-                      }`}
+                        }`}
                     >
                       <div className="text-xs font-semibold text-gray-600 mb-1">
                         {msg.role === "user" ? "You" : "Assistant"}
@@ -333,11 +340,10 @@ export default function Home() {
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => setSelectedCategory(null)}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-                      selectedCategory === null
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition ${selectedCategory === null
                         ? "bg-indigo-600 text-white"
                         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                    }`}
+                      }`}
                   >
                     All
                   </button>
@@ -345,11 +351,10 @@ export default function Home() {
                     <button
                       key={category}
                       onClick={() => setSelectedCategory(category)}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-                        selectedCategory === category
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition ${selectedCategory === category
                           ? "bg-indigo-600 text-white"
                           : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                      }`}
+                        }`}
                     >
                       {category.replace(/_/g, " ")}
                     </button>
