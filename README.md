@@ -1,9 +1,9 @@
-# qhacks
-
+# Kingston Archive
+<img src="https://github.com/vincentli-vl/qhacks/blob/main/demo_images/logo.png" alt="logo" width="250" height="500"/>
 This program was made for the 2026 QHacks competition. It was built using Flask, React, BeauifulSoup4, and many other libraries. 
 
 ## Kingston Archives has many features, including but not limited to;
-<img src="https://github.com/vincentli-vl/qhacks/blob/main/demo_images/logo.png" alt="logo" width="250" height="500"/>
+
 * Home - Search engine powered only by information found in the Kingston Archives
 * Timeline - Browse past documents in the order of establishment/occurrence
 * AI Assistant - A way to "ask the past" for advice, knowledge, and guidance. Great for new hires / transitional workers
